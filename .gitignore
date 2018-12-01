@@ -144,3 +144,6 @@ modules.xml
 .env
 
 # End of https://www.gitignore.io/api/symfony,phpstorm+all
+###> symfony/web-server-bundle ###
+/.web-server-pid
+###< symfony/web-server-bundle ###
