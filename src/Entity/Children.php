@@ -50,12 +50,6 @@ class Children
      */
     private $actions;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\SchoolLevel")
-     * @ORM\JoinColumn(nullable=false)
-     */
-    private $schoolLevel;
-
     public function __construct()
     {
         $this->actions = new ArrayCollection();

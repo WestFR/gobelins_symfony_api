@@ -14,14 +14,6 @@ class SchoolLevel
 
     /**
      * @ORM\Id()
-     * @ORM\GeneratedValue()
-     * @ORM\Column(type="integer")
-     */
-    private $id;
-
-
-    /**
-     * @ORM\Id()
      * @ORM\Column(type="string", length=255)
      */
     private $label;
@@ -34,12 +26,6 @@ class SchoolLevel
     public function __construct()
     {
         $this->schoolClasses = new ArrayCollection();
-    }
-
-
-    public function getId(): ?int
-    {
-        return $this->id;
     }
 
     public function getLabel(): ?string

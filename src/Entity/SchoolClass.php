@@ -43,7 +43,7 @@ class SchoolClass
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\SchoolLevel", inversedBy="schoolClasses")
-     * @ORM\JoinColumn(nullable=false)
+     * @ORM\JoinColumn(nullable=false, referencedColumnName="label")
      */
     private $schoolLevel;
 

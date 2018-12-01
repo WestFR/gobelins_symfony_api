@@ -11,9 +11,9 @@ use Doctrine\ORM\Mapping\InheritanceType;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\ActionRepository")
- * @InheritanceType("SINGLE_TABLE")
- * @DiscriminatorColumn(name="custom", type="boolean")
- * @DiscriminatorMap({"true" = "ActionCustom", "false" = "Action"})
+ * @InheritanceType("JOINED")
+ * @DiscriminatorColumn(name="type", type="string")
+ * @DiscriminatorMap({"action_custom" = "ActionCustom", "action" = "Action"})
  */
 class Action
 {
