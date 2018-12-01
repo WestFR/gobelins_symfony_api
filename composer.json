@@ -8,6 +8,7 @@
         "nelmio/api-doc-bundle": "^3.3",
         "nelmio/cors-bundle": "^1.5",
         "symfony/asset": "4.2.*",
+        "fzaninotto/faker": "^1.8",
         "symfony/console": "4.2.*",
         "symfony/debug": "4.2.*",
         "symfony/dotenv": "4.2.*",
@@ -67,6 +68,7 @@
     },
     "require-dev": {
         "symfony/profiler-pack": "^1.0",
-        "symfony/web-server-bundle": "4.2.*"
+        "symfony/web-server-bundle": "4.2.*",
+        "doctrine/doctrine-fixtures-bundle": "^3.0"
     }
 }

@@ -14,21 +14,20 @@ class SchoolClass
 {
     /**
      * @ORM\Id()
-     * @ORM\GeneratedValue()
-     * @ORM\Column(type="integer")
+     * @ORM\GeneratedValue(strategy="UUID")
+     * @ORM\Column(type="guid")
      */
     private $id;
 
     /**
-     * @ORM\Column(type="string", length=4)
+     * @ORM\Column(type="integer", length=4)
      * @Assert\NotBlank()
      */
     private $yearStart;
 
     /**
-     * @ORM\Column(type="string", length=4)
+     * @ORM\Column(type="integer", length=4)
      * @Assert\NotBlank()
-     * @Assert\Length(min="4", max="4")
      */
     private $yearEnd;
 
