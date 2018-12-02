@@ -157,7 +157,7 @@ class AuthController extends Controller {
             $em->persist($user);
             $em->flush();
 
-            $data = array('code' => 200, 'message' => 'User created.', 'user' => $serializer->serialize($user, 'json'));
+            $data = array('code' => Response::HTTP_OK, 'message' => 'User are created.', 'token' => $randomToken);
             return new JsonResponse($data, Response::HTTP_OK);
         } else {
             return new JsonResponse($serializer->serialize($constraintValidator, 'json'), Response::HTTP_BAD_REQUEST);
