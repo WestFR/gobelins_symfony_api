@@ -6,8 +6,13 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
+use JMS\Serializer\Annotation as JMS;
+use Swagger\Annotations as SWG;
+
 /**
  * @ORM\Entity(repositoryClass="App\Repository\SchoolLevelRepository")
+ *
+ * @JMS\ExclusionPolicy("all")
  */
 class SchoolLevel
 {
@@ -15,11 +20,21 @@ class SchoolLevel
     /**
      * @ORM\Id()
      * @ORM\Column(type="string", length=255)
+     *
+     * @JMS\Expose
+     * @JMS\Groups({"school_name", "school_all"})
+     *
+     * @SWG\Property(description="School name level.")
      */
     private $label;
 
     /**
      * @ORM\OneToMany(targetEntity="App\Entity\SchoolClass", mappedBy="schoolLevel")
+     *
+     * @JMS\Expose
+     * @JMS\Groups({"school_all"})
+     *
+     * @SWG\Property(description="School classes for school level.")
      */
     private $schoolClasses;
 
@@ -70,5 +85,18 @@ class SchoolLevel
         }
 
         return $this;
+    }
+
+    // Update Method
+    public function update(SchoolLevel $schoolLevel) {
+
+        if($schoolLevel->getLabel() != null) {
+            $this->label = $schoolLevel->getLabel();
+        }
+
+        /*if($schoolLevel->getSchoolClasses() != null) {
+            $this->schoolClasses = $schoolLevel->getSchoolClasses();
+        }*/
+
     }
 }

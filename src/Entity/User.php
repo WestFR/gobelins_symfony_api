@@ -21,6 +21,7 @@ use Swagger\Annotations as SWG;
  * @DiscriminatorMap({"parent" = "UserParent", "teacher" = "UserTeacher"})
  *
  * @UniqueEntity(fields={"mail"}, message="This specified email {{ value }} already exists", groups={"user_create"})
+ *
  * @JMS\ExclusionPolicy("all")
  */
 abstract class User implements UserInterface

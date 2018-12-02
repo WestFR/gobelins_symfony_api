@@ -25,13 +25,13 @@ use Swagger\Annotations as SWG;
 use App\Entity\User;
 
 /**
- * @Route("/api/user/", name="api_user")
+ * @Route("/api/user", name="api_user")
  */
 class UserController extends Controller {
 
     /**
      *
-     * @Rest\Get("profile")
+     * @Rest\Get("/")
      *
      * @SWG\Response(
      *     response=200,
@@ -55,7 +55,7 @@ class UserController extends Controller {
 
     /**
      *
-     * @Rest\Post("update")
+     * @Rest\Put("/")
      *
      * @SWG\Response(
      *     response=200,
@@ -101,7 +101,7 @@ class UserController extends Controller {
 
     /**
      *
-     * @Rest\Delete("delete")
+     * @Rest\Delete("/")
      *
      * @SWG\Response(
      *     response=200,
