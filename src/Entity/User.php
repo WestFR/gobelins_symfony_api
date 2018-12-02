@@ -46,7 +46,7 @@ abstract class User implements UserInterface
      * @Assert\NotBlank()
      *
      * @JMS\Expose
-     * @JMS\Groups({"user_create"})
+     * @JMS\Groups({"user_create", "user_update"})
      *
      * @SWG\Property(description="First name of the user.")
      */
@@ -57,7 +57,7 @@ abstract class User implements UserInterface
      * @Assert\NotBlank()
      *
      * @JMS\Expose
-     * @JMS\Groups({"user_create"})
+     * @JMS\Groups({"user_create", "user_update"})
      *
      * @SWG\Property(description="Last name of the user.")
      */
@@ -68,7 +68,7 @@ abstract class User implements UserInterface
      * @Assert\NotBlank()
      *
      * @JMS\Expose
-     * @JMS\Groups({"user_create", "user_login"})
+     * @JMS\Groups({"user_create", "user_login", "user_update"})
      *
      * @SWG\Property(description="Password of the user.")
      */
@@ -80,7 +80,7 @@ abstract class User implements UserInterface
      * @Assert\Email()
      *
      * @JMS\Expose
-     * @JMS\Groups({"user_create", "user_login"})
+     * @JMS\Groups({"user_create", "user_login", "user_update"})
      *
      * @SWG\Property(description="Last name of the user.")
      */
@@ -90,7 +90,7 @@ abstract class User implements UserInterface
      * @ORM\Column(type="string", length=255)
      *
      * @JMS\Expose
-     * @JMS\Groups({"user_create"})
+     * @JMS\Groups({"user_create", "user_update"})
      *
      * @SWG\Property(description="Phone of the user.")
      */
@@ -100,7 +100,7 @@ abstract class User implements UserInterface
      * @ORM\Column(type="datetime")
      *
      * @JMS\Expose
-     * @JMS\Groups({"user_create"})
+     * @JMS\Groups({"user_create", "user_update"})
      *
      * @SWG\Property(description="Born date-time of the user.")
      */
@@ -288,5 +288,36 @@ abstract class User implements UserInterface
     public function eraseCredentials()
     {
         // TODO: Implement eraseCredentials() method.
+    }
+
+    // Update Method
+    public function update(User $user) {
+
+        if($user->getFirstname() != null) {
+            $this->firstname = $user->getFirstname();
+        }
+        if($user->getLastname() != null) {
+            $this->lastname = $user->getLastname();
+        }
+
+        if($user->getPassword() != null) {
+            $this->password = $user->getPassword();
+        }
+
+        if($user->getMail() != null) {
+            $this->mail = $user->getMail();
+        }
+
+        if($user->getPhone() != null) {
+            $this->phone = $user->getPhone();
+        }
+
+        if($user->getBornedAt() != null) {
+            $this->bornedAt = $user->getBornedAt();
+        }
+
+        if($user->getUpdatedAt() != null) {
+            $this->updatedAt = $user->getUpdatedAt();
+        }
     }
 }
