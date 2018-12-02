@@ -10,6 +10,8 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
+use Symfony\Component\Security\Core\Encoder\EncoderFactoryInterface;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntityValidator;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 use JMS\Serializer\SerializerInterface;
@@ -51,7 +53,7 @@ class AuthController extends Controller {
      * @SWG\Tag(name="Auth")
      *
      */
-    public function postLogin(Request $request) {
+    public function postLogin(Request $request, EncoderFactoryInterface $encoderFactory) {
         $userMail = $request->request->get('mail');
         $userPassword = $request->request->get('password');
 
@@ -60,11 +62,19 @@ class AuthController extends Controller {
             return new JsonResponse($data, Response::HTTP_UNAUTHORIZED);
         }
 
-        // Verify user
-        $user = $this->getDoctrine()->getRepository(User::class)->findOneBy(['mail' => $userMail, 'password' => $userPassword]);
+        // Verify userMail
+        $user = $this->getDoctrine()->getRepository(User::class)->findOneBy(['mail' => $userMail]);
 
-        if($user == null) {
-            $data = array('code' => Response::HTTP_UNAUTHORIZED, 'message' => 'User not found.');
+        // Verify userPaswword decode
+        $passwordIsValid = null;
+        if($user != null) {
+            $encoder = $encoderFactory->getEncoder($user);
+            $passwordIsValid = $encoder->isPasswordValid($user->getPassword(), $userPassword, null);
+        }
+
+        // Check user and valid password
+        if ($user == null || $passwordIsValid == null) {
+            $data = array('code' => Response::HTTP_UNAUTHORIZED, 'message' => 'User mail or password is invalid.');
             return new JsonResponse($data, Response::HTTP_UNAUTHORIZED);
         } else {
 
@@ -141,14 +151,19 @@ class AuthController extends Controller {
      * @SWG\Tag(name="Auth")
      *
      */
-    public function createUser(Request $request, SerializerInterface $serializer, ValidatorInterface $validator) {
+    public function createUser(Request $request, SerializerInterface $serializer, ValidatorInterface $validator, EncoderFactoryInterface $encoderFactory) {
         $serializationContext = DeserializationContext::create();
 
         $user = $serializer->deserialize($request->getContent(), User::class, 'json', $serializationContext->setGroups(['user_create']));
         $constraintValidator = $validator->validate($user);
 
         if($constraintValidator->count() == 0) {
+            $encoder = $encoderFactory->getEncoder($user);
+            $hashedPassword = $encoder->encodePassword($user->getPassword(), null);
+
             $randomToken = $random = sha1(random_bytes(128));
+
+            $user->setPassword($hashedPassword);
             $user->setApiToken($randomToken);
             $user->setCreatedAt(new \DateTime());
             $user->setUpdatedAt(new \DateTime());

@@ -9,9 +9,8 @@ use Doctrine\ORM\Mapping\DiscriminatorColumn;
 use Doctrine\ORM\Mapping\DiscriminatorMap;
 use Doctrine\ORM\Mapping\InheritanceType;
 
-use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Validator\Constraints as Assert;
-
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use JMS\Serializer\Annotation as JMS;
 use Swagger\Annotations as SWG;
 
@@ -21,7 +20,7 @@ use Swagger\Annotations as SWG;
  * @DiscriminatorColumn(name="type", type="string")
  * @DiscriminatorMap({"parent" = "UserParent", "teacher" = "UserTeacher"})
  *
- * @UniqueEntity("email", groups={"user_create"})
+ * @UniqueEntity(fields={"mail"}, message="This specified email {{ value }} already exists", groups={"user_create"})
  * @JMS\ExclusionPolicy("all")
  */
 abstract class User implements UserInterface
@@ -76,7 +75,7 @@ abstract class User implements UserInterface
     private $password;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @ORM\Column(type="string", length=255, unique=true)
      * @Assert\NotBlank()
      * @Assert\Email()
      *
