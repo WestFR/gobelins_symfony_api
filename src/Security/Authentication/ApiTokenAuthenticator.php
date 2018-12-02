@@ -13,14 +13,17 @@ use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
 use Symfony\Component\Security\Core\User\UserProviderInterface;
 use Symfony\Component\Security\Core\Encoder\EncoderFactoryInterface;
+use Symfony\Component\Translation\TranslatorInterface;
 
 class ApiTokenAuthenticator extends AbstractGuardAuthenticator
 {
     private $em;
+    private $translator;
     private $encoderFactory;
 
-    public function __construct(EntityManagerInterface $em, EncoderFactoryInterface $encoderFactory) {
+    public function __construct(EntityManagerInterface $em, TranslatorInterface $translator, EncoderFactoryInterface $encoderFactory) {
         $this->em = $em;
+        $this->translator = $translator;
         $this->encoderFactory = $encoderFactory;
     }
 
@@ -43,13 +46,11 @@ class ApiTokenAuthenticator extends AbstractGuardAuthenticator
         );
     }
 
-    public function getUser($credentials, UserProviderInterface $userProvider)
-    {
+    public function getUser($credentials, UserProviderInterface $userProvider) {
         $apiToken = $credentials['token'];
 
-        if (null === $apiToken) {
-            return;
-        }
+        if (null === $apiToken) { return; }
+
         // if a User object, checkCredentials() is called
         return $this->em->getRepository(User::class)->findOneBy(['apiToken' => $apiToken]);
     }
@@ -72,9 +73,9 @@ class ApiTokenAuthenticator extends AbstractGuardAuthenticator
 
     public function onAuthenticationFailure(Request $request, AuthenticationException $exception)  {
         // or to translate this message
-        //$this->translator->trans($exception->getMessageKey(), $exception->getMessageData());
+        //
 
-        $data = array('code' => Response::HTTP_FORBIDDEN, 'message' => strtr($exception->getMessageKey(), $exception->getMessageData()));
+        $data = array('code' => Response::HTTP_FORBIDDEN, 'message' => $this->translator->trans($exception->getMessageKey(), $exception->getMessageData()));
         return new JsonResponse($data, Response::HTTP_FORBIDDEN);
     }
 
@@ -83,7 +84,7 @@ class ApiTokenAuthenticator extends AbstractGuardAuthenticator
      */
     public function start(Request $request, AuthenticationException $authException = null) {
         // you might translate this message
-        $data = array('code' => Response::HTTP_UNAUTHORIZED, 'message' => 'Authentication Required');
+        $data = array('code' => Response::HTTP_UNAUTHORIZED, 'message' => $this->translator->trans('Authentication Required'));
         return new JsonResponse($data, Response::HTTP_UNAUTHORIZED);
     }
 

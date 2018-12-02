@@ -8,13 +8,21 @@ use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\DiscriminatorColumn;
 use Doctrine\ORM\Mapping\DiscriminatorMap;
 use Doctrine\ORM\Mapping\InheritanceType;
+
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Validator\Constraints as Assert;
+
+use JMS\Serializer\Annotation as JMS;
+use Swagger\Annotations as SWG;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\UserRepository")
  * @InheritanceType("SINGLE_TABLE")
  * @DiscriminatorColumn(name="type", type="string")
  * @DiscriminatorMap({"parent" = "UserParent", "teacher" = "UserTeacher"})
+ *
+ * @UniqueEntity("email", groups={"user_create"})
+ * @JMS\ExclusionPolicy("all")
  */
 abstract class User implements UserInterface
 {
@@ -22,29 +30,48 @@ abstract class User implements UserInterface
      * @ORM\Id()
      * @ORM\GeneratedValue(strategy="UUID")
      * @ORM\Column(type="guid")
+     *
+     * @SWG\Property(description="Unique id of the user.")
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", unique=true)
+     *
+     * @SWG\Property(description="Unique apiToken of the user.")
      */
     private $apiToken;
 
     /**
      * @ORM\Column(type="string", length=255)
      * @Assert\NotBlank()
+     *
+     * @JMS\Expose
+     * @JMS\Groups({"user_create"})
+     *
+     * @SWG\Property(description="First name of the user.")
      */
     private $firstname;
 
     /**
      * @ORM\Column(type="string", length=255)
      * @Assert\NotBlank()
+     *
+     * @JMS\Expose
+     * @JMS\Groups({"user_create"})
+     *
+     * @SWG\Property(description="Last name of the user.")
      */
     private $lastname;
 
     /**
      * @ORM\Column(type="string", length=255)
      * @Assert\NotBlank()
+     *
+     * @JMS\Expose
+     * @JMS\Groups({"user_create", "user_login"})
+     *
+     * @SWG\Property(description="Password of the user.")
      */
     private $password;
 
@@ -52,26 +79,45 @@ abstract class User implements UserInterface
      * @ORM\Column(type="string", length=255)
      * @Assert\NotBlank()
      * @Assert\Email()
+     *
+     * @JMS\Expose
+     * @JMS\Groups({"user_create", "user_login"})
+     *
+     * @SWG\Property(description="Last name of the user.")
      */
     private $mail;
 
     /**
      * @ORM\Column(type="string", length=255)
+     *
+     * @JMS\Expose
+     * @JMS\Groups({"user_create"})
+     *
+     * @SWG\Property(description="Phone of the user.")
      */
     private $phone;
 
     /**
      * @ORM\Column(type="datetime")
+     *
+     * @JMS\Expose
+     * @JMS\Groups({"user_create"})
+     *
+     * @SWG\Property(description="Born date-time of the user.")
      */
     private $bornedAt;
 
     /**
      * @ORM\Column(type="datetime")
+     *
+     * @SWG\Property(description="Created date-time.")
      */
     private $createdAt;
 
     /**
      * @ORM\Column(type="datetime")
+     *
+     * @SWG\Property(description="Updated date-time.")
      */
     private $updatedAt;
 
@@ -90,7 +136,7 @@ abstract class User implements UserInterface
         return $this->apiToken;
     }
 
-    public function setApiToken(string $apiToken): ?string
+    public function setApiToken(string $apiToken): self
     {
         $this->apiToken = $apiToken;
 

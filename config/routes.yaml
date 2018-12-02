@@ -1,9 +1,16 @@
 # Api Doc route
 app.swagger_ui:
-  path: /api/doc
+  path: /
   methods: GET
   defaults: { _controller: nelmio_api_doc.controller.swagger_ui }
 
+# Api Route
+#auth:
+#    type: rest
+#    resource: App\Controller\AuthController
+
+#create
+#login
 
   #index:
   #    path: /
