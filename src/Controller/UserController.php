@@ -99,6 +99,29 @@ class UserController extends Controller {
         }
     }
 
+    /**
+     *
+     * @Rest\Delete("delete")
+     *
+     * @SWG\Response(
+     *     response=200,
+     *     description="Delete the authenticated user."
+     * )
+     *
+     * @SWG\Tag(name="User")
+     *
+     */
+    public function deleteProfile(Request $request) {
+        $apiToken = $request->headers->get('X-AUTH-TOKEN');
+        $userToRemove = $this->getDoctrine()->getRepository(User::class)->findOneBy(['apiToken' => $apiToken]);
+
+        $this->getDoctrine()->getManager()->remove($userToRemove);
+        $this->getDoctrine()->getManager()->flush();
+
+        $data = array('code' => Response::HTTP_OK, 'message' => 'User are removed.');
+        return new JsonResponse($data, Response::HTTP_OK);
+    }
+
 
 
 
