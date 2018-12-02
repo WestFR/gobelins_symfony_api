@@ -42,6 +42,8 @@ class UserController extends Controller {
      *
      */
     public function getProfile(Request $request, SerializerInterface $serializer) {
+        $serializationContext = SerializationContext::create();
+
         $apiToken = $request->headers->get('X-AUTH-TOKEN');
 
         if ($apiToken == null) {
@@ -50,7 +52,7 @@ class UserController extends Controller {
         }
 
         $user = $this->getDoctrine()->getRepository(User::class)->findOneBy(['apiToken' => $apiToken]);
-        return new Response($serializer->serialize($user, 'json'), Response::HTTP_OK);
+        return new Response($serializer->serialize($user, 'json', $serializationContext->setGroups(['user_create'])), Response::HTTP_OK);
     }
 
     /**

@@ -162,6 +162,7 @@ class AuthController extends Controller {
 
             $randomToken = $random = sha1(random_bytes(128));
 
+            $user->setBasicRole();
             $user->setPassword($hashedPassword);
             $user->setApiToken($randomToken);
             $user->setCreatedAt(new \DateTime());

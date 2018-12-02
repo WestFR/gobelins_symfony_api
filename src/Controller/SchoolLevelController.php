@@ -25,7 +25,7 @@ use Swagger\Annotations as SWG;
 use App\Entity\SchoolLevel;
 
 /**
- * @Route("/api/schools/levels", name="api_auth")
+ * @Route("/api/schools/levels", name="api_schoolLevels")
  */
 class SchoolLevelController extends Controller {
 
