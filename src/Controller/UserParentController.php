@@ -1,8 +1,7 @@
 <?php
 
-namespace App\Controller\UserParent;
+namespace App\Controller;
 
-use App\Controller\AbstractController;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use Swagger\Annotations as SWG;
 
@@ -52,4 +51,5 @@ class UserParentController extends AbstractController
 
         return $this->sendJson($teacher, ['user_item', 'parent_item']);
     }
+
 }

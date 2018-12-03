@@ -1,8 +1,7 @@
 <?php
 
-namespace App\Controller\SchoolClass;
+namespace App\Controller;
 
-use App\Controller\AbstractController;
 use App\Entity\SchoolClass;
 
 /**

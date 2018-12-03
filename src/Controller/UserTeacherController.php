@@ -1,8 +1,7 @@
 <?php
 
-namespace App\Controller\UserTeacher;
+namespace App\Controller;
 
-use App\Controller\AbstractController;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use Swagger\Annotations as SWG;
 

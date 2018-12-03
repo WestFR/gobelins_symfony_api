@@ -31,17 +31,15 @@ abstract class AbstractController extends FOSRestController
      * @param null $data
      * @param array $groups
      * @param int $status
-     * @param array $headers
-     * @param bool $json
      * @return JsonResponse
      */
-    public function sendJson($data = null, array $groups = [], int $status = Response::HTTP_OK, $headers = [], $json = true)
+    public function sendJson($data = null, array $groups = [], int $status = Response::HTTP_OK)
     {
         if (count($groups) > 0) {
             $data = $this->serializer->serialize($data, 'json', SerializationContext::create()->setGroups($groups));
         } else {
             $data = $this->serializer->serialize($data, 'json');
         }
-        return new JsonResponse($data, $status, $headers, $json);
+        return new JsonResponse($data, $status);
     }
 }
