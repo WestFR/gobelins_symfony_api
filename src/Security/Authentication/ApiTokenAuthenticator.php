@@ -75,7 +75,7 @@ class ApiTokenAuthenticator extends AbstractGuardAuthenticator
         // or to translate this message
         //
 
-        $data = array('code' => Response::HTTP_FORBIDDEN, 'message' => $this->translator->trans($exception->getMessageKey(), $exception->getMessageData()));
+        $data = array('code' => Response::HTTP_FORBIDDEN, 'message' => "API token not match for any user, please verify it or login before to retry !");
         return new JsonResponse($data, Response::HTTP_FORBIDDEN);
     }
 

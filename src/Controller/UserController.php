@@ -28,17 +28,20 @@ class UserController extends Controller {
 
     /**
      *
-     * @Rest\Get("/")
+     * @Rest\Get("/me")
      *
      * @SWG\Response(
      *     response=200,
      *     description="Return the authenticated user."
      * )
+     * @SWG\Parameter( name="X-AUTH-TOKEN", in="header", required=true, type="string", default="43fd8a51ae2758bb8176bff0c1642537a78b229c", description="X-AUTH-TOKEN (api token authorization)" )
      *
      * @SWG\Tag(name="User")
      *
      */
     public function getProfile(Request $request, SerializerInterface $serializer) {
+        $serializationContext = SerializationContext::create();
+
         $apiToken = $request->headers->get('X-AUTH-TOKEN');
 
         if ($apiToken == null) {
@@ -47,12 +50,12 @@ class UserController extends Controller {
         }
 
         $user = $this->getDoctrine()->getRepository(User::class)->findOneBy(['apiToken' => $apiToken]);
-        return new Response($serializer->serialize($user, 'json'), Response::HTTP_OK);
+        return new Response($serializer->serialize($user, 'json', $serializationContext->setGroups(['user_create'])), Response::HTTP_OK);
     }
 
     /**
      *
-     * @Rest\Put("/")
+     * @Rest\Put("/me")
      *
      * @SWG\Response(
      *     response=200,
@@ -98,7 +101,7 @@ class UserController extends Controller {
 
     /**
      *
-     * @Rest\Delete("/")
+     * @Rest\Delete("/me")
      *
      * @SWG\Response(
      *     response=200,

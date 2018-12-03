@@ -35,7 +35,7 @@ class AuthController extends Controller {
      *
      * @SWG\Response(
      *     response=200,
-     *     description="Return a token."
+     *     description="Return a token.",
      * ),
      * @SWG\Parameter(
      *     name="body",
@@ -44,9 +44,9 @@ class AuthController extends Controller {
      *     required=true,
      *     format="application/json",
      *     @SWG\Schema(
-     *        type="array",
-     *        @Model(type=User::class, groups={"user_login"})
-     *     ),
+     *          @SWG\Property(property="mail", type="string"),
+     *          @SWG\Property(property="password", type="string"),
+     *     )
      * )
      *
      * @SWG\Tag(name="Auth")
@@ -134,16 +134,22 @@ class AuthController extends Controller {
      * @SWG\Response(
      *     response=200,
      *     description="Create a user.",
-     * )
+     * ),
      * @SWG\Parameter(
      *     name="body",
      *     in="body",
-     *     description="JSON Payload for login a user.",
+     *     description="JSON Payload for create a user.",
      *     required=true,
      *     format="application/json",
      *     @SWG\Schema(
-     *        type="array",
-     *        @Model(type=User::class, groups={"user_create"})
+     *          @SWG\Property(property="firstname", type="string"),
+     *          @SWG\Property(property="lastname", type="string"),
+     *          @SWG\Property(property="password", type="string"),
+     *          @SWG\Property(property="mail", type="string"),
+     *          @SWG\Property(property="phone", type="string"),
+     *          @SWG\Property(property="type", type="parent or teacher"),
+     *          @SWG\Property(property="borned_at", type="datetime"),
+     *
      *     )
      * )
      *
@@ -162,6 +168,7 @@ class AuthController extends Controller {
 
             $randomToken = $random = sha1(random_bytes(128));
 
+            $user->setBasicRole();
             $user->setPassword($hashedPassword);
             $user->setApiToken($randomToken);
             $user->setCreatedAt(new \DateTime());

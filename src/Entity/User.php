@@ -31,6 +31,9 @@ abstract class User implements UserInterface
      * @ORM\GeneratedValue(strategy="UUID")
      * @ORM\Column(type="guid")
      *
+     * @JMS\Expose
+     * @JMS\Groups({"user_admin"})
+     *
      * @SWG\Property(description="Unique id of the user.")
      */
     private $id;
@@ -98,6 +101,18 @@ abstract class User implements UserInterface
     private $phone;
 
     /**
+     * @ORM\Column(type="json_array")
+     *
+     * @Assert\NotBlank(groups={"user_create"})
+     *
+     * @JMS\Expose
+     * @JMS\Groups({"user_admin"})
+     *
+     * @SWG\Property(description="Role(s) of the user (separated by ',').")
+     */
+    private $roles;
+
+    /**
      * @ORM\Column(type="datetime")
      *
      * @JMS\Expose
@@ -111,7 +126,7 @@ abstract class User implements UserInterface
      * @ORM\Column(type="datetime")
      *
      * @JMS\Expose
-     * @JMS\Groups({"user_list", "user_item"})
+     * @JMS\Groups({"user_list", "user_item", "user_admin"})
      *
      * @SWG\Property(description="Created date-time.")
      */
@@ -121,7 +136,7 @@ abstract class User implements UserInterface
      * @ORM\Column(type="datetime")
      *
      * @JMS\Expose
-     * @JMS\Groups({"user_list", "user_item"})
+     * @JMS\Groups({"user_list", "user_item", "user_admin"})
      *
      * @SWG\Property(description="Updated date-time.")
      */
@@ -259,9 +274,18 @@ abstract class User implements UserInterface
      *
      * @return (Role|string)[] The user roles
      */
-    public function getRoles()
-    {
-        return array('ROLE_USER');
+    public function getRoles() {
+        return $this->roles;
+    }
+
+    public function setBasicRole() {
+        $this->roles = array('ROLE_USER');
+        return $this;
+    }
+
+    public function setAdminRole() {
+        $this->roles = array('ROLE_USER','ROLE_ADMIN');
+        return $this;
     }
 
     /**
@@ -318,6 +342,10 @@ abstract class User implements UserInterface
         if($user->getPhone() != null) {
             $this->phone = $user->getPhone();
         }
+
+        /*if($user->getRoles() != null) {
+            $this->setRoles(explode(', ', $user->getRoles()));
+        }*/
 
         if($user->getBornedAt() != null) {
             $this->bornedAt = $user->getBornedAt();
