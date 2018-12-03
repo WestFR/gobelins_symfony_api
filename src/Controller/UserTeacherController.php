@@ -77,4 +77,26 @@ class UserTeacherController extends AbstractController
 
         return $this->sendJson($teacher, ['teacher_item'], Response::HTTP_CREATED);
     }
+
+    /**
+     * @param int $teacherId
+     * @param int $classId
+     * @return \Symfony\Component\HttpFoundation\JsonResponse
+     */
+    public function deleteTeacherClassAction(
+        int $teacherId,
+        int $classId
+    ) {
+        /** @var UserTeacher $teacher */
+        $teacher = $this->getDoctrine()->getRepository(UserTeacher::class)->find($teacherId);
+        /** @var SchoolClass $class */
+        $class = $this->getDoctrine()->getRepository(SchoolClass::class)->find($classId);
+
+        $teacher->removeSchoolClass($class);
+
+        $this->getDoctrine()->getManager()->persist($teacher);
+        $this->getDoctrine()->getManager()->flush();
+
+        return $this->sendJson($teacher, ['teacher_item'], Response::HTTP_CREATED);
+    }
 }

@@ -59,4 +59,21 @@ class SchoolClassController extends AbstractController
 
         return $this->sendJson($class, ['class_item'], Response::HTTP_CREATED);
     }
+
+    public function deleteClassChildrenAction(
+        int $classId,
+        int $childrenId
+    ) {
+        /** @var SchoolClass $class */
+        $class = $this->getDoctrine()->getRepository(SchoolClass::class)->find($classId);
+        /** @var Children $children */
+        $children = $this->getDoctrine()->getRepository(SchoolClass::class)->find($childrenId);
+
+        $class->removeChildren($children);
+
+        $this->getDoctrine()->getManager()->persist($class);
+        $this->getDoctrine()->getManager()->flush();
+
+        $this->sendJson($class, ['class_item']);
+    }
 }
