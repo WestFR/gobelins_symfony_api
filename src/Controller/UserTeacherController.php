@@ -2,8 +2,11 @@
 
 namespace App\Controller;
 
+use App\Entity\SchoolClass;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use Swagger\Annotations as SWG;
+use App\Entity\UserTeacher;
+use Symfony\Component\Validator\ConstraintViolationListInterface;
 
 class UserTeacherController extends AbstractController
 {
@@ -38,13 +41,33 @@ class UserTeacherController extends AbstractController
      *     )
      * )
      *
-     * @param int $id
+     * @param int $teacherId
      * @return \Symfony\Component\HttpFoundation\JsonResponse
      */
-    public function getTeacherAction(int $id)
+    public function getTeacherAction(int $teacherId)
     {
-        $teacher = $this->getDoctrine()->getRepository(UserTeacher::class)->find($id);
+        $teacher = $this->getDoctrine()->getRepository(UserTeacher::class)->find($teacherId);
 
         return $this->sendJson($teacher, ['user_item', 'teacher_item']);
+    }
+
+    /**
+     * @param int $teacherId
+     * @param SchoolClass $class
+     * @param ConstraintViolationListInterface $violations
+     * @return \Symfony\Component\HttpFoundation\JsonResponse
+     */
+    public function postTeacherClassesAction(
+        int $teacherId,
+        SchoolClass $class,
+        ConstraintViolationListInterface $violations
+    ) {
+        /** @var UserTeacher $teacher */
+        $teacher = $this->getDoctrine()->getRepository(UserTeacher::class)->find($teacherId);
+        $teacher->addSchoolClass($class);
+        $this->getDoctrine()->getManager()->persist($teacher);
+        $this->getDoctrine()->getManager()->flush();
+
+        return $this->sendJson($teacher, ['teacher_item']);
     }
 }
