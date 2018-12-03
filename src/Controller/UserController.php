@@ -14,12 +14,9 @@ use Symfony\Component\Security\Core\Encoder\EncoderFactoryInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 use JMS\Serializer\SerializerInterface;
-use JMS\Serializer\SerializationContext;
 use JMS\Serializer\DeserializationContext;
 
 use FOS\RestBundle\Controller\Annotations as Rest;
-
-use Nelmio\ApiDocBundle\Annotation\Model;
 use Swagger\Annotations as SWG;
 
 use App\Entity\User;

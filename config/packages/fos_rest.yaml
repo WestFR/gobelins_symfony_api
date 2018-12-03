@@ -1,7 +1,7 @@
 fos_rest:
-  body_converter:
-    enabled: true
-  view:
-    formats: { json: true, xml: false, rss: false }
-  serializer:
-    serialize_null: true
+    body_converter:
+        enabled: true
+        validate: true
+        validation_errors_argument: violations
+    routing_loader:
+        default_format: json

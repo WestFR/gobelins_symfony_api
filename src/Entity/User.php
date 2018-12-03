@@ -36,7 +36,7 @@ abstract class User implements UserInterface
     private $id;
 
     /**
-     * @ORM\Column(type="string", unique=true)
+     * @ORM\Column(type="string", unique=true, nullable=true)
      *
      * @SWG\Property(description="Unique apiToken of the user.")
      */

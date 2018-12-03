@@ -1,0 +1,24 @@
+teachers:
+    type: rest
+    resource: 'routes_api.yaml'
+    prefix: teachers
+
+parents:
+    type: rest
+    resource: 'routes_api.yaml'
+    prefix: parents
+
+classes:
+    type: rest
+    resource: 'routes_api.yaml'
+    prefix: classes
+
+childrens:
+    type: rest
+    parent: parents
+    resource: App\Controller\ChildrenController
+
+classes:
+    type: rest
+    parent: teachers
+    resource: App\Controller\SchoolClassController

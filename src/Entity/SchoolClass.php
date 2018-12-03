@@ -6,9 +6,12 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
+use JMS\Serializer\Annotation as JMS;
+use Swagger\Annotations as SWG;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\SchoolClassRepository")
+ * @JMS\ExclusionPolicy("all")
  */
 class SchoolClass
 {
@@ -16,37 +19,47 @@ class SchoolClass
      * @ORM\Id()
      * @ORM\GeneratedValue(strategy="UUID")
      * @ORM\Column(type="guid")
+     *
+     * @SWG\Property(description="Unique uuid of the class.")
      */
     private $id;
 
     /**
      * @ORM\Column(type="integer", length=4)
      * @Assert\NotBlank()
+     *
+     * @SWG\Property(description="Start year value.")
      */
     private $yearStart;
 
     /**
      * @ORM\Column(type="integer", length=4)
      * @Assert\NotBlank()
+     *
+     * @SWG\Property(description="End year value")
      */
     private $yearEnd;
 
     /**
-
      * @ORM\OneToMany(targetEntity="App\Entity\Children", mappedBy="schoolClass")
+     *
+     * @SWG\Property(description="Childrens in the class.")
      */
     private $childrens;
 
     /**
-
      * @ORM\ManyToOne(targetEntity="UserTeacher", inversedBy="schoolClasses")
      * @ORM\JoinColumn(nullable=false)
+     *
+     * @SWG\Property(description="Teacher of the class.")
      */
     private $teacher;
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\SchoolLevel", inversedBy="schoolClasses")
      * @ORM\JoinColumn(nullable=false, referencedColumnName="label")
+     *
+     * @SWG\Property(description="School level of the class.")
      */
     private $schoolLevel;
 

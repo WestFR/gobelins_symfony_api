@@ -1,4 +1,11 @@
 nelmio_api_doc:
+  documentation:
+      _host: api.example.com
+      _schemes: [http, https]
+      info:
+          title: My App
+          description: This is an awesome app!
+          version: 1.0.0
   areas:
-    default:
-        path_patterns: [ ^/api/auth, ^/api/user, ^/api/schools ]
+      default:
+          path_patterns: [ ^/api ]

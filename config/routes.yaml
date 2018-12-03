@@ -1,4 +1,10 @@
 # Api Doc route
+
+api:
+    type: rest
+    resource: 'routes_api.yaml'
+    prefix: api
+
 app.swagger_ui:
   path: /
   methods: GET
