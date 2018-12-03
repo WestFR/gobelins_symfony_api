@@ -1,6 +1,6 @@
 nelmio_api_doc:
   documentation:
-    host: http://127.0.0.1:8000/
+    host: 127.0.0.1:8000
     info:
       title: My App
       description: This is an awesome app !

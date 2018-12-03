@@ -31,12 +31,13 @@ class UserController extends Controller {
 
     /**
      *
-     * @Rest\Get("/")
+     * @Rest\Get("/me")
      *
      * @SWG\Response(
      *     response=200,
      *     description="Return the authenticated user."
      * )
+     * @SWG\Parameter( name="X-AUTH-TOKEN", in="header", required=true, type="string", default="43fd8a51ae2758bb8176bff0c1642537a78b229c", description="X-AUTH-TOKEN (api token authorization)" )
      *
      * @SWG\Tag(name="User")
      *
@@ -57,7 +58,7 @@ class UserController extends Controller {
 
     /**
      *
-     * @Rest\Put("/")
+     * @Rest\Put("/me")
      *
      * @SWG\Response(
      *     response=200,
@@ -103,7 +104,7 @@ class UserController extends Controller {
 
     /**
      *
-     * @Rest\Delete("/")
+     * @Rest\Delete("/me")
      *
      * @SWG\Response(
      *     response=200,
