@@ -6,9 +6,12 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
+use JMS\Serializer\Annotation as JMS;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\ChildrenRepository")
+ *
+ * @JMS\ExclusionPolicy("all")
  */
 class Children
 {
@@ -16,24 +19,36 @@ class Children
      * @ORM\Id()
      * @ORM\GeneratedValue(strategy="UUID")
      * @ORM\Column(type="guid")
+     *
+     * @JMS\Expose()
+     * @JMS\Groups({"class_item"})
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=255)
      * @Assert\NotBlank()
+     *
+     * @JMS\Expose()
+     * @JMS\Groups({"class_item"})
      */
     private $firstname;
 
     /**
      * @ORM\Column(type="string", length=255)
      * @Assert\NotBlank()
+     *
+     * @JMS\Expose()
+     * @JMS\Groups({"class_item"})
      */
     private $lastname;
 
     /**
      * @ORM\Column(type="datetime")
      * @Assert\NotBlank()
+     *
+     * @JMS\Expose()
+     * @JMS\Groups({"class_item"})
      */
     private $bornedAt;
 
@@ -41,16 +56,22 @@ class Children
      * @ORM\ManyToOne(targetEntity="UserParent", inversedBy="childrens")
      * @ORM\ManyToOne(targetEntity="App\Entity\User", inversedBy="childrens")
      * @ORM\JoinColumn(nullable=false)
+     *
+     * @JMS\Expose()
      */
     private $parent;
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\SchoolClass", inversedBy="childrens")
+     *
+     * @JMS\Expose()
      */
     private $schoolClass;
 
     /**
      * @ORM\ManyToMany(targetEntity="App\Entity\Action", inversedBy="childrens")
+     *
+     * @JMS\Expose()
      */
     private $actions;
 

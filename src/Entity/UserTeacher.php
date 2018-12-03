@@ -5,24 +5,32 @@ namespace App\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use JMS\Serializer\Annotation as JMS;
 
 /**
- * @ORM\Entity(repositoryClass="UserTeacherRepository")
+ * @ORM\Entity(repositoryClass="App\Repository\UserTeacherRepository")
+ *
+ * @JMS\ExclusionPolicy("all")
  */
 class UserTeacher extends User
 {
     /**
      * @ORM\OneToMany(targetEntity="App\Entity\SchoolClass", mappedBy="teacher")
+     *
+     * @JMS\Expose()
+     * @JMS\Groups({"teacher_item"})
      */
     private $schoolClasses;
 
     /**
      * @ORM\OneToMany(targetEntity="App\Entity\ActionCustom", mappedBy="creator")
+     * @JMS\Groups({"teacher_item"})
      */
     private $actionCustoms;
 
     public function __construct()
     {
+        parent::__construct();
         $this->schoolClasses = new ArrayCollection();
         $this->actionCustoms = new ArrayCollection();
     }

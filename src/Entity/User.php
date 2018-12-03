@@ -47,7 +47,7 @@ abstract class User implements UserInterface
      * @Assert\NotBlank()
      *
      * @JMS\Expose
-     * @JMS\Groups({"user_create", "user_update"})
+     * @JMS\Groups({"user_create", "user_update", "user_list", "user_item"})
      *
      * @SWG\Property(description="First name of the user.")
      */
@@ -58,7 +58,7 @@ abstract class User implements UserInterface
      * @Assert\NotBlank()
      *
      * @JMS\Expose
-     * @JMS\Groups({"user_create", "user_update"})
+     * @JMS\Groups({"user_create", "user_update", "user_list", "user_item"})
      *
      * @SWG\Property(description="Last name of the user.")
      */
@@ -69,7 +69,7 @@ abstract class User implements UserInterface
      * @Assert\NotBlank()
      *
      * @JMS\Expose
-     * @JMS\Groups({"user_create", "user_login", "user_update"})
+     * @JMS\Groups({"user_create", "user_login", "user_update", "user_list", "user_item"})
      *
      * @SWG\Property(description="Password of the user.")
      */
@@ -81,7 +81,7 @@ abstract class User implements UserInterface
      * @Assert\Email()
      *
      * @JMS\Expose
-     * @JMS\Groups({"user_create", "user_login", "user_update"})
+     * @JMS\Groups({"user_create", "user_login", "user_update", "user_list", "user_item"})
      *
      * @SWG\Property(description="Last name of the user.")
      */
@@ -91,7 +91,7 @@ abstract class User implements UserInterface
      * @ORM\Column(type="string", length=255)
      *
      * @JMS\Expose
-     * @JMS\Groups({"user_create", "user_update"})
+     * @JMS\Groups({"user_create", "user_update", "user_list", "user_item"})
      *
      * @SWG\Property(description="Phone of the user.")
      */
@@ -101,7 +101,7 @@ abstract class User implements UserInterface
      * @ORM\Column(type="datetime")
      *
      * @JMS\Expose
-     * @JMS\Groups({"user_create", "user_update"})
+     * @JMS\Groups({"user_create", "user_update", "user_list", "user_item"})
      *
      * @SWG\Property(description="Born date-time of the user.")
      */
@@ -110,12 +110,18 @@ abstract class User implements UserInterface
     /**
      * @ORM\Column(type="datetime")
      *
+     * @JMS\Expose
+     * @JMS\Groups({"user_list", "user_item"})
+     *
      * @SWG\Property(description="Created date-time.")
      */
     private $createdAt;
 
     /**
      * @ORM\Column(type="datetime")
+     *
+     * @JMS\Expose
+     * @JMS\Groups({"user_list", "user_item"})
      *
      * @SWG\Property(description="Updated date-time.")
      */

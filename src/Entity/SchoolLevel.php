@@ -22,7 +22,7 @@ class SchoolLevel
      * @ORM\Column(type="string", length=255)
      *
      * @JMS\Expose
-     * @JMS\Groups({"school_name", "school_all"})
+     * @JMS\Groups({"school_name", "school_all", "class_item"})
      *
      * @SWG\Property(description="School name level.")
      */

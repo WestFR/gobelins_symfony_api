@@ -7,7 +7,7 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * @ORM\Entity(repositoryClass="UserParentRepository")
+ * @ORM\Entity(repositoryClass="App\Repository\UserParentRepository")
  */
 class UserParent extends User
 {
@@ -18,6 +18,7 @@ class UserParent extends User
 
     public function __construct()
     {
+        parent::__construct();
         $this->childrens = new ArrayCollection();
     }
 

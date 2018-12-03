@@ -20,77 +20,95 @@ class SchoolClass
      * @ORM\GeneratedValue(strategy="UUID")
      * @ORM\Column(type="guid")
      *
+     * @JMS\Expose()
+     * @JMS\Groups({"class_item"})
+     *
      * @SWG\Property(description="Unique uuid of the class.")
      */
-    private $id;
+    protected $id;
 
     /**
      * @ORM\Column(type="integer", length=4)
      * @Assert\NotBlank()
+     *
+     * @JMS\Expose()
+     * @JMS\Groups({"class_item"})
      *
      * @SWG\Property(description="Start year value.")
      */
-    private $yearStart;
+    protected $yearStart;
 
     /**
      * @ORM\Column(type="integer", length=4)
      * @Assert\NotBlank()
      *
+     * @JMS\Expose()
+     * @JMS\Groups({"class_item"})
+     *
      * @SWG\Property(description="End year value")
      */
-    private $yearEnd;
+    protected $yearEnd;
 
     /**
      * @ORM\OneToMany(targetEntity="App\Entity\Children", mappedBy="schoolClass")
      *
+     * @JMS\Expose()
+     * @JMS\Groups({"class_item"})
+     *
      * @SWG\Property(description="Childrens in the class.")
      */
-    private $childrens;
+    protected $childrens;
 
     /**
      * @ORM\ManyToOne(targetEntity="UserTeacher", inversedBy="schoolClasses")
      * @ORM\JoinColumn(nullable=false)
      *
+     * @JMS\Expose()
+     * @JMS\Groups({"class_item"})
+     *
      * @SWG\Property(description="Teacher of the class.")
      */
-    private $teacher;
+    protected $teacher;
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\SchoolLevel", inversedBy="schoolClasses")
      * @ORM\JoinColumn(nullable=false, referencedColumnName="label")
      *
+     * @JMS\Expose()
+     * @JMS\Groups({"class_item"})
+     *
      * @SWG\Property(description="School level of the class.")
      */
-    private $schoolLevel;
+    protected $schoolLevel;
 
     public function __construct()
     {
         $this->childrens = new ArrayCollection();
     }
 
-    public function getId(): ?int
+    public function getId(): ?string
     {
         return $this->id;
     }
 
-    public function getYearStart(): ?string
+    public function getYearStart(): ?int
     {
         return $this->yearStart;
     }
 
-    public function setYearStart(string $yearStart): self
+    public function setYearStart(int $yearStart): self
     {
         $this->yearStart = $yearStart;
 
         return $this;
     }
 
-    public function getYearEnd(): ?string
+    public function getYearEnd(): ?int
     {
         return $this->yearEnd;
     }
 
-    public function setYearEnd(string $yearEnd): self
+    public function setYearEnd(int $yearEnd): self
     {
         $this->yearEnd = $yearEnd;
 
