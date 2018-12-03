@@ -50,7 +50,7 @@ abstract class User implements UserInterface
      * @Assert\NotBlank()
      *
      * @JMS\Expose
-     * @JMS\Groups({"user_create", "user_update", "user_list", "user_item"})
+     * @JMS\Groups({"user_create", "user_update", "user_list", "user_item", "parent_list"})
      *
      * @SWG\Property(description="First name of the user.")
      */
@@ -61,7 +61,7 @@ abstract class User implements UserInterface
      * @Assert\NotBlank()
      *
      * @JMS\Expose
-     * @JMS\Groups({"user_create", "user_update", "user_list", "user_item"})
+     * @JMS\Groups({"user_create", "user_update", "user_list", "user_item",  "parent_list"})
      *
      * @SWG\Property(description="Last name of the user.")
      */
@@ -142,12 +142,8 @@ abstract class User implements UserInterface
      */
     private $updatedAt;
 
-    public function __construct()
-    {
-        $this->childrens = new ArrayCollection();
-    }
 
-    public function getId(): ?int
+    public function getId(): ?string
     {
         return $this->id;
     }

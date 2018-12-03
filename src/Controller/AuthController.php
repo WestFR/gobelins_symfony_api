@@ -99,6 +99,15 @@ class AuthController extends Controller {
      *     description="Logout a user."
      * ),
      *
+     * @SWG\Parameter(
+     *     name="X-AUTH-TOKEN",
+     *     in="header",
+     *     required=true,
+     *     type="string",
+     *     default="43fd8a51ae2758bb8176bff0c16",
+     *     description="X-AUTH-TOKEN (api token authorization)"
+     * )
+     *
      * @SWG\Tag(name="Auth")
      *
      */
@@ -149,7 +158,6 @@ class AuthController extends Controller {
      *          @SWG\Property(property="phone", type="string"),
      *          @SWG\Property(property="type", type="parent or teacher"),
      *          @SWG\Property(property="borned_at", type="datetime"),
-     *
      *     )
      * )
      *

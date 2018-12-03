@@ -10,11 +10,15 @@ use Doctrine\ORM\Mapping\DiscriminatorMap;
 use Doctrine\ORM\Mapping\InheritanceType;
 use Symfony\Component\Validator\Constraints as Assert;
 
+use JMS\Serializer\Annotation as JMS;
+
 /**
  * @ORM\Entity(repositoryClass="App\Repository\ActionRepository")
  * @InheritanceType("SINGLE_TABLE")
  * @DiscriminatorColumn(name="type", type="string")
  * @DiscriminatorMap({"action_custom" = "ActionCustom", "action" = "Action"})
+ *
+ * @JMS\ExclusionPolicy("all")
  */
 class Action
 {
@@ -28,12 +32,18 @@ class Action
     /**
      * @ORM\Column(type="string", length=255)
      * @Assert\NotBlank()
+     *
+     * @JMS\Expose
+     * @JMS\Groups({"parent_list"})
      */
     private $label;
 
     /**
      * @ORM\Column(type="smallint")
      * @Assert\NotBlank()
+     *
+     * @JMS\Expose
+     * @JMS\Groups({"parent_list"})
      */
     private $score;
 

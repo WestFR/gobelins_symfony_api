@@ -34,7 +34,15 @@ class UserController extends Controller {
      *     response=200,
      *     description="Return the authenticated user."
      * )
-     * @SWG\Parameter( name="X-AUTH-TOKEN", in="header", required=true, type="string", default="43fd8a51ae2758bb8176bff0c1642537a78b229c", description="X-AUTH-TOKEN (api token authorization)" )
+     *
+     * @SWG\Parameter(
+     *     name="X-AUTH-TOKEN",
+     *     in="header",
+     *     required=true,
+     *     type="string",
+     *     default="43fd8a51ae2758bb8176bff0c16",
+     *     description="X-AUTH-TOKEN (api token authorization)"
+     * )
      *
      * @SWG\Tag(name="User")
      *
@@ -60,6 +68,15 @@ class UserController extends Controller {
      * @SWG\Response(
      *     response=200,
      *     description="Updated the authenticated user."
+     * )
+     *
+     * @SWG\Parameter(
+     *     name="X-AUTH-TOKEN",
+     *     in="header",
+     *     required=true,
+     *     type="string",
+     *     default="43fd8a51ae2758bb8176bff0c16",
+     *     description="X-AUTH-TOKEN (api token authorization)"
      * )
      *
      * @SWG\Tag(name="User")
@@ -106,6 +123,15 @@ class UserController extends Controller {
      * @SWG\Response(
      *     response=200,
      *     description="Delete the authenticated user."
+     * )
+     *
+     * @SWG\Parameter(
+     *     name="X-AUTH-TOKEN",
+     *     in="header",
+     *     required=true,
+     *     type="string",
+     *     default="43fd8a51ae2758bb8176bff0c16",
+     *     description="X-AUTH-TOKEN (api token authorization)"
      * )
      *
      * @SWG\Tag(name="User")

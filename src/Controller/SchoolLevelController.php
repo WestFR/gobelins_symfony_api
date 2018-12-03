@@ -38,6 +38,15 @@ class SchoolLevelController extends Controller {
      *     description="Return all schools level."
      * ),
      *
+     * @SWG\Parameter(
+     *     name="X-AUTH-TOKEN",
+     *     in="header",
+     *     required=true,
+     *     type="string",
+     *     default="43fd8a51ae2758bb8176bff0c16",
+     *     description="X-AUTH-TOKEN (api token authorization)"
+     * )
+     *
      * @SWG\Tag(name="SchoolLevel")
      *
      */
@@ -62,6 +71,15 @@ class SchoolLevelController extends Controller {
      *     response=200,
      *     description="Return one specified school level."
      * ),
+     *
+     * @SWG\Parameter(
+     *     name="X-AUTH-TOKEN",
+     *     in="header",
+     *     required=true,
+     *     type="string",
+     *     default="43fd8a51ae2758bb8176bff0c16",
+     *     description="X-AUTH-TOKEN (api token authorization)"
+     * )
      *
      * @SWG\Tag(name="SchoolLevel")
      *
@@ -89,15 +107,23 @@ class SchoolLevelController extends Controller {
      * ),
      *
      * @SWG\Parameter(
+     *     name="X-AUTH-TOKEN",
+     *     in="header",
+     *     required=true,
+     *     type="string",
+     *     default="43fd8a51ae2758bb8176bff0c16",
+     *     description="X-AUTH-TOKEN (api token authorization)"
+     * )
+     *
+     * @SWG\Parameter(
      *     name="body",
      *     in="body",
      *     description="JSON Payload for create a school level.",
      *     required=true,
      *     format="application/json",
      *     @SWG\Schema(
-     *        type="array",
-     *        @Model(type=SchoolLevel::class, groups={"school_name"})
-     *     ),
+     *          @SWG\Property(property="label", type="string"),
+     *     )
      * )
      *
      * @SWG\Tag(name="SchoolLevel")
@@ -131,15 +157,23 @@ class SchoolLevelController extends Controller {
      * )
      *
      * @SWG\Parameter(
+     *     name="X-AUTH-TOKEN",
+     *     in="header",
+     *     required=true,
+     *     type="string",
+     *     default="43fd8a51ae2758bb8176bff0c16",
+     *     description="X-AUTH-TOKEN (api token authorization)"
+     * )
+     *
+     * @SWG\Parameter(
      *     name="body",
      *     in="body",
      *     description="JSON Payload for create a school level.",
      *     required=true,
      *     format="application/json",
      *     @SWG\Schema(
-     *        type="array",
-     *        @Model(type=SchoolLevel::class, groups={"school_name"})
-     *     ),
+     *          @SWG\Property(property="label", type="string"),
+     *     )
      * )
      *
      * @SWG\Tag(name="SchoolLevel")
@@ -176,6 +210,15 @@ class SchoolLevelController extends Controller {
      * @SWG\Response(
      *     response=200,
      *     description="Delete the specified school level."
+     * )
+     *
+     * @SWG\Parameter(
+     *     name="X-AUTH-TOKEN",
+     *     in="header",
+     *     required=true,
+     *     type="string",
+     *     default="43fd8a51ae2758bb8176bff0c16",
+     *     description="X-AUTH-TOKEN (api token authorization)"
      * )
      *
      * @SWG\Tag(name="SchoolLevel")

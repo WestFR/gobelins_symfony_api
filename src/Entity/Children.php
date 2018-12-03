@@ -21,7 +21,7 @@ class Children
      * @ORM\Column(type="guid")
      *
      * @JMS\Expose()
-     * @JMS\Groups({"class_item"})
+     * @JMS\Groups({"parent_list", "class_item"})
      */
     private $id;
 
@@ -30,7 +30,7 @@ class Children
      * @Assert\NotBlank()
      *
      * @JMS\Expose()
-     * @JMS\Groups({"class_item"})
+     * @JMS\Groups({"children_create", "parent_list", "class_item"})
      */
     private $firstname;
 
@@ -39,7 +39,7 @@ class Children
      * @Assert\NotBlank()
      *
      * @JMS\Expose()
-     * @JMS\Groups({"class_item"})
+     * @JMS\Groups({"children_create", "parent_list", "class_item"})
      */
     private $lastname;
 
@@ -48,7 +48,7 @@ class Children
      * @Assert\NotBlank()
      *
      * @JMS\Expose()
-     * @JMS\Groups({"class_item"})
+     * @JMS\Groups({"children_create", "parent_list", "class_item"})
      */
     private $bornedAt;
 
@@ -65,6 +65,7 @@ class Children
      * @ORM\ManyToOne(targetEntity="App\Entity\SchoolClass", inversedBy="childrens")
      *
      * @JMS\Expose()
+     * @JMS\Groups({"children_create", "parent_list"})
      */
     private $schoolClass;
 
@@ -72,6 +73,7 @@ class Children
      * @ORM\ManyToMany(targetEntity="App\Entity\Action", inversedBy="childrens")
      *
      * @JMS\Expose()
+     * @JMS\Groups({"parent_list"})
      */
     private $actions;
 
@@ -80,7 +82,7 @@ class Children
         $this->actions = new ArrayCollection();
     }
 
-    public function getId(): ?int
+    public function getId(): ?string
     {
         return $this->id;
     }
@@ -148,9 +150,12 @@ class Children
     /**
      * @return Collection|Action[]
      */
-    public function getActions(): Collection
-    {
-        return $this->actions;
+    public function getActions(): Collection {
+        if ($this->actions == null) {
+            return new ArrayCollection();
+        } else {
+            return $this->actions;
+        }
     }
 
     public function addAction(Action $action): self
@@ -169,5 +174,32 @@ class Children
         }
 
         return $this;
+    }
+
+    // Update Method
+    public function update(Children $children) {
+
+        if($children->getFirstname() != null) {
+            $this->firstname = $children->getFirstname();
+        }
+        if($children->getLastname() != null) {
+            $this->lastname = $children->getLastname();
+        }
+
+        if($children->getBornedAt() != null) {
+            $this->bornedAt = $children->getBornedAt();
+        }
+
+        if($children->getParent() != null) {
+            $this->parent = $children->getParent();
+        }
+
+        if($children->getSchoolClass() != null) {
+            $this->schoolClass = $children->getSchoolClass();
+        }
+
+        if($children->getActions() != null) {
+            $this->actions = $children->getActions();
+        }
     }
 }
