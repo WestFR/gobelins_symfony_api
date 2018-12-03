@@ -2,8 +2,13 @@
 
 namespace App\Controller;
 
+use App\Entity\SchoolClass;
 use Nelmio\ApiDocBundle\Annotation\Model;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Swagger\Annotations as SWG;
+use App\Entity\UserTeacher;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Validator\ConstraintViolationListInterface;
 
 use App\Entity\UserTeacher;
 
@@ -40,13 +45,60 @@ class UserTeacherController extends AbstractController
      *     )
      * )
      *
-     * @param int $id
+     * @param int $teacherId
      * @return \Symfony\Component\HttpFoundation\JsonResponse
      */
-    public function getTeacherAction(int $id)
+    public function getTeacherAction(int $teacherId)
     {
-        $teacher = $this->getDoctrine()->getRepository(UserTeacher::class)->find($id);
+        $teacher = $this->getDoctrine()->getRepository(UserTeacher::class)->find($teacherId);
 
         return $this->sendJson($teacher, ['user_item', 'teacher_item']);
+    }
+
+    /**
+     * @ParamConverter("class", converter="fos_rest.request_body")
+     *
+     * @param int $teacherId
+     * @param SchoolClass $class
+     * @param ConstraintViolationListInterface $violations
+     * @return \Symfony\Component\HttpFoundation\JsonResponse
+     */
+    public function postTeacherClassAction(
+        int $teacherId,
+        SchoolClass $class,
+        ConstraintViolationListInterface $violations
+    ) {
+        if (count($violations) > 0) return $this->sendJson($violations, [], Response::HTTP_BAD_REQUEST);
+
+        /** @var UserTeacher $teacher */
+        $teacher = $this->getDoctrine()->getRepository(UserTeacher::class)->find($teacherId);
+        $teacher->addSchoolClass($class);
+
+        $this->getDoctrine()->getManager()->persist($teacher);
+        $this->getDoctrine()->getManager()->flush();
+
+        return $this->sendJson($teacher, ['teacher_item'], Response::HTTP_CREATED);
+    }
+
+    /**
+     * @param int $teacherId
+     * @param int $classId
+     * @return \Symfony\Component\HttpFoundation\JsonResponse
+     */
+    public function deleteTeacherClassAction(
+        int $teacherId,
+        int $classId
+    ) {
+        /** @var UserTeacher $teacher */
+        $teacher = $this->getDoctrine()->getRepository(UserTeacher::class)->find($teacherId);
+        /** @var SchoolClass $class */
+        $class = $this->getDoctrine()->getRepository(SchoolClass::class)->find($classId);
+
+        $teacher->removeSchoolClass($class);
+
+        $this->getDoctrine()->getManager()->persist($teacher);
+        $this->getDoctrine()->getManager()->flush();
+
+        return $this->sendJson($teacher, ['teacher_item'], Response::HTTP_CREATED);
     }
 }
