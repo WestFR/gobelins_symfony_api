@@ -83,8 +83,13 @@ class AdminController extends Controller {
      *
      * @SWG\Tag(name="Admin")
      *
+     * @deprecated
      */
     public function addUserAdmin($userId) {
+        $data = array('code' => Response::HTTP_OK, 'message' => 'This route is not available for this moment.');
+        return new JsonResponse($data, Response::HTTP_OK);
+
+
         $user = $this->getDoctrine()->getRepository(User::class)->find($userId);
 
         if($user == null) {

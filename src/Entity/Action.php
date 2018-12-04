@@ -26,6 +26,9 @@ class Action
      * @ORM\Id()
      * @ORM\GeneratedValue(strategy="UUID")
      * @ORM\Column(type="guid")
+     *
+     * @JMS\Expose
+     * @JMS\Groups({"action_list"})
      */
     private $id;
 
@@ -34,7 +37,7 @@ class Action
      * @Assert\NotBlank()
      *
      * @JMS\Expose
-     * @JMS\Groups({"parent_list"})
+     * @JMS\Groups({"action_list",  "parent_list"})
      */
     private $label;
 
@@ -43,7 +46,7 @@ class Action
      * @Assert\NotBlank()
      *
      * @JMS\Expose
-     * @JMS\Groups({"parent_list"})
+     * @JMS\Groups({"action_list",  "parent_list"})
      */
     private $score;
 
