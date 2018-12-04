@@ -27,6 +27,7 @@ class TeacherFixtureFactory extends FixtureFactory
         $teacher->setBornedAt(new \DateTime($generator->date()));
         $teacher->setCreatedAt($generator->dateTime());
         $teacher->setUpdatedAt(new \DateTime());
+        $teacher->setBasicRole();
         return $teacher;
     }
 }

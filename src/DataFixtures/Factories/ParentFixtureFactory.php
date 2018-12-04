@@ -28,6 +28,7 @@ class ParentFixtureFactory extends FixtureFactory
         $parent->setBornedAt(new \DateTime($generator->date()));
         $parent->setCreatedAt($generator->dateTime());
         $parent->setUpdatedAt(new \DateTime());
+        $parent->setBasicRole();
         return $parent;
     }
 }
