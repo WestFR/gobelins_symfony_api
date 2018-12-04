@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\User;
 use FOS\RestBundle\Controller\FOSRestController;
 use JMS\Serializer\SerializationContext;
 use JMS\Serializer\SerializerBuilder;
@@ -34,6 +35,7 @@ abstract class AbstractController extends FOSRestController
     {
         $this->serializer = SerializerBuilder::create()->build();
         $this->request = $requestStack->getCurrentRequest();
+        // dd($this->getMe());
     }
 
     /**
@@ -68,5 +70,11 @@ abstract class AbstractController extends FOSRestController
             'message' => $message
         ];
         return new JsonResponse($data, $status);
+    }
+
+    public function getMe()
+    {
+        $token = $this->request->headers->get('X-AUTH-TOKEN');
+        return is_null($token) ? null : $this->getDoctrine()->getRepository(User::class)->findOneBy(['apiToken' => $token]);
     }
 }
