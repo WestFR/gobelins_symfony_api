@@ -6,6 +6,8 @@ use FOS\RestBundle\Controller\FOSRestController;
 use JMS\Serializer\SerializationContext;
 use JMS\Serializer\SerializerBuilder;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
@@ -20,11 +22,18 @@ abstract class AbstractController extends FOSRestController
     protected $serializer;
 
     /**
-     * AbstractController constructor.
+     * @var Request
      */
-    public function __construct()
+    protected $request;
+
+    /**
+     * AbstractController constructor.
+     * @param RequestStack $requestStack
+     */
+    public function __construct(RequestStack $requestStack)
     {
         $this->serializer = SerializerBuilder::create()->build();
+        $this->request = $requestStack->getCurrentRequest();
     }
 
     /**
@@ -54,12 +63,10 @@ abstract class AbstractController extends FOSRestController
      */
     public function resError(int $status, $message)
     {
-        return new JsonResponse(
-            [
-                'code' => $status,
-                'message' => $message
-            ],
-            $status
-        );
+        $data = [
+            'code' => $status,
+            'message' => $message
+        ];
+        return new JsonResponse($data, $status);
     }
 }

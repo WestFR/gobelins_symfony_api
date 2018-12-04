@@ -13,3 +13,7 @@ parents:
 teacher:
     type: rest
     resource: App\Controller\UserTeacherController
+
+actions:
+    type: rest
+    resource: App\Controller\ActionController
