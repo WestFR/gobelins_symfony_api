@@ -29,7 +29,7 @@ class UserParentController extends AbstractController
     {
         $parents = $this->getDoctrine()->getRepository(UserParent::class)->findAll();
 
-        return $this->sendJson($parents, ['user_list', 'parent_list']);
+        return $this->resSuccess($parents, ['user_list', 'parent_list']);
     }
 
     /**
@@ -43,14 +43,14 @@ class UserParentController extends AbstractController
      *     )
      * )
      *
-     * @param int $id
+     * @param string $parentId
      * @return \Symfony\Component\HttpFoundation\JsonResponse
      */
-    public function getParentAction(int $id)
+    public function getParentAction(string $parentId)
     {
-        $teacher = $this->getDoctrine()->getRepository(UserParent::class)->find($id);
+        $parent = $this->getDoctrine()->getRepository(UserParent::class)->find($parentId);
 
-        return $this->sendJson($teacher, ['user_item', 'parent_item']);
+        return $this->resSuccess($parent, ['user_item', 'parent_item']);
     }
 
 }

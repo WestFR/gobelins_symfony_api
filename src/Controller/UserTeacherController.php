@@ -29,7 +29,7 @@ class UserTeacherController extends AbstractController
     {
         $teachers = $this->getDoctrine()->getRepository(UserTeacher::class)->findAll();
 
-        return $this->sendJson($teachers, ['user_list', 'teacher_list']);
+        return $this->resSuccess($teachers, ['user_list', 'teacher_list']);
     }
 
     /**
@@ -50,7 +50,7 @@ class UserTeacherController extends AbstractController
     {
         $teacher = $this->getDoctrine()->getRepository(UserTeacher::class)->find($teacherId);
 
-        return $this->sendJson($teacher, ['user_item', 'teacher_item']);
+        return $this->resSuccess($teacher, ['user_item', 'teacher_item']);
     }
 
     /**
@@ -66,7 +66,7 @@ class UserTeacherController extends AbstractController
         SchoolClass $class,
         ConstraintViolationListInterface $violations
     ) {
-        if (count($violations) > 0) return $this->sendJson($violations, [], Response::HTTP_BAD_REQUEST);
+        if (count($violations) > 0) return $this->resSuccess($violations, [], Response::HTTP_BAD_REQUEST);
 
         /** @var UserTeacher $teacher */
         $teacher = $this->getDoctrine()->getRepository(UserTeacher::class)->find($teacherId);
@@ -75,7 +75,7 @@ class UserTeacherController extends AbstractController
         $this->getDoctrine()->getManager()->persist($teacher);
         $this->getDoctrine()->getManager()->flush();
 
-        return $this->sendJson($teacher, ['teacher_item'], Response::HTTP_CREATED);
+        return $this->resSuccess($teacher, ['teacher_item'], Response::HTTP_CREATED);
     }
 
     /**
@@ -97,6 +97,6 @@ class UserTeacherController extends AbstractController
         $this->getDoctrine()->getManager()->persist($teacher);
         $this->getDoctrine()->getManager()->flush();
 
-        return $this->sendJson($teacher, ['teacher_item'], Response::HTTP_CREATED);
+        return $this->resSuccess($teacher, ['teacher_item'], Response::HTTP_CREATED);
     }
 }

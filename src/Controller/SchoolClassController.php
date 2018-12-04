@@ -21,7 +21,7 @@ class SchoolClassController extends AbstractController
     {
         $classes = $this->getDoctrine()->getRepository(SchoolClass::class)->findAll();
 
-        return $this->sendJson($classes, ['classes_list']);
+        return $this->resSuccess($classes, ['classes_list']);
     }
 
     /**
@@ -32,7 +32,7 @@ class SchoolClassController extends AbstractController
     {
         $class = $this->getDoctrine()->getRepository(SchoolClass::class)->find($classId);
 
-        return $this->sendJson($class, ['classes_item']);
+        return $this->resSuccess($class, ['classes_item']);
     }
 
     /**
@@ -48,7 +48,7 @@ class SchoolClassController extends AbstractController
         Children $children,
         ConstraintViolationListInterface $violations
     ) {
-        if (count($violations) > 0) return $this->sendJson($violations, [], Response::HTTP_BAD_REQUEST);
+        if (count($violations) > 0) return $this->resSuccess($violations, [], Response::HTTP_BAD_REQUEST);
 
         /** @var SchoolClass $class */
         $class = $this->getDoctrine()->getRepository(SchoolClass::class)->find($classId);
@@ -57,7 +57,7 @@ class SchoolClassController extends AbstractController
         $this->getDoctrine()->getManager()->persist($class);
         $this->getDoctrine()->getManager()->flush();
 
-        return $this->sendJson($class, ['class_item'], Response::HTTP_CREATED);
+        return $this->resSuccess($class, ['class_item'], Response::HTTP_CREATED);
     }
 
     public function deleteClassChildrenAction(
@@ -74,6 +74,18 @@ class SchoolClassController extends AbstractController
         $this->getDoctrine()->getManager()->persist($class);
         $this->getDoctrine()->getManager()->flush();
 
-        $this->sendJson($class, ['class_item']);
+        $this->resSuccess($class, ['class_item']);
+    }
+
+    /**
+     * @param int $classId
+     * @return \Symfony\Component\HttpFoundation\JsonResponse
+     */
+    public function getClassChildrensAction(int $classId)
+    {
+        /** @var SchoolClass $class */
+        $class = $this->getDoctrine()->getRepository(SchoolClass::class)->find($classId);
+
+        return $this->resSuccess($class->getChildrens(), ['childrens_list']);
     }
 }

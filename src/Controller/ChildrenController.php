@@ -2,7 +2,8 @@
 
 namespace App\Controller;
 
-use App\Entity\SchoolClass;
+use App\Entity\Children;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Class ChildrenController
@@ -11,14 +12,18 @@ use App\Entity\SchoolClass;
 class ChildrenController extends AbstractController
 {
     /**
-     * @param int $classId
+     * @param string $childrenId
      * @return \Symfony\Component\HttpFoundation\JsonResponse
      */
-    public function getChildrens(int $classId)
+    public function getChildrenActionsAction(string $childrenId)
     {
-        /** @var SchoolClass $class */
-        $class = $this->getDoctrine()->getRepository(SchoolClass::class)->find($classId);
+        /** @var Children $children */
+        $children = $this->getDoctrine()->getRepository(Children::class)->find($childrenId);
 
-        return $this->sendJson($class->getChildrens(), ['childrens_list']);
+        if (is_null($children)) {
+            return $this->resError(Response::HTTP_BAD_REQUEST, sprintf('Children %s not found', $childrenId));
+        }
+
+        return $this->resSuccess($children->getActions(), ['actions_list']);
     }
 }
