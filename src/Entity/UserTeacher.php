@@ -30,7 +30,6 @@ class UserTeacher extends User
 
     public function __construct()
     {
-        parent::__construct();
         $this->schoolClasses = new ArrayCollection();
         $this->actionCustoms = new ArrayCollection();
     }

@@ -27,7 +27,6 @@ class UserParent extends User
 
     public function __construct()
     {
-        parent::__construct();
         $this->childrens = new ArrayCollection();
     }
 
