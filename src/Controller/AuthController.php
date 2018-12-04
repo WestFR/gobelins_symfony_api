@@ -99,6 +99,15 @@ class AuthController extends Controller {
      *     description="Logout a user."
      * ),
      *
+     * @SWG\Parameter(
+     *     name="X-AUTH-TOKEN",
+     *     in="header",
+     *     required=true,
+     *     type="string",
+     *     default="43fd8a51ae2758bb8176bff0c16",
+     *     description="X-AUTH-TOKEN (api token authorization)"
+     * )
+     *
      * @SWG\Tag(name="Auth")
      *
      */
@@ -149,7 +158,6 @@ class AuthController extends Controller {
      *          @SWG\Property(property="phone", type="string"),
      *          @SWG\Property(property="type", type="parent or teacher"),
      *          @SWG\Property(property="borned_at", type="datetime"),
-     *
      *     )
      * )
      *
@@ -183,6 +191,74 @@ class AuthController extends Controller {
         } else {
             return new JsonResponse($serializer->serialize($constraintValidator, 'json'), Response::HTTP_BAD_REQUEST);
         }
+    }
+
+    /**
+     *
+     * @Rest\Post("forgotPassword")
+     *
+     * @SWG\Response(
+     *     response=200,
+     *     description="Send a mail to user for reset password.",
+     * ),
+     *
+     * @SWG\Parameter(
+     *     name="body",
+     *     in="body",
+     *     description="JSON Payload for create a user.",
+     *     required=true,
+     *     format="application/json",
+     *     @SWG\Schema(
+     *          @SWG\Property(property="mail", type="string"),
+     *     )
+     * )
+     *
+     * @SWG\Tag(name="Auth")
+     *
+     * @deprecated
+     */
+    public function forgotPassword(Request $request, SerializerInterface $serializer, ValidatorInterface $validator, EncoderFactoryInterface $encoderFactory) {
+        $data = array('code' => Response::HTTP_OK, 'message' => 'This route is not available for this moment.');
+        return new JsonResponse($data, Response::HTTP_OK);
+    }
+
+    /**
+     *
+     * @Rest\Post("resetPassword")
+     *
+     * @SWG\Response(
+     *     response=200,
+     *     description="Reset password of user with new password in payload.",
+     * ),
+     *
+     * @SWG\Parameter(
+     *     name="X-RESET-PASSWORD-TOKEN",
+     *     in="header",
+     *     required=true,
+     *     type="string",
+     *     default="43fd8a51ae2758bb8176bff0c16",
+     *     description="X-RESET-PASSWORD-TOKEN (reset password token send by mail with forgotPassword route)"
+     * )
+     *
+     * @SWG\Parameter(
+     *     name="body",
+     *     in="body",
+     *     description="JSON Payload for change user password.",
+     *     required=true,
+     *     format="application/json",
+     *     @SWG\Schema(
+     *          @SWG\Property(property="mail", type="string"),
+     *          @SWG\Property(property="password", type="string"),
+     *     )
+     * )
+     *
+     * @SWG\Tag(name="Auth")
+     *
+     * @deprecated
+     */
+    public function resetPassword(Request $request, SerializerInterface $serializer, ValidatorInterface $validator, EncoderFactoryInterface $encoderFactory) {
+        $data = array('code' => Response::HTTP_OK, 'message' => 'This route is not available for this moment.');
+        return new JsonResponse($data, Response::HTTP_OK);
     }
 
 }

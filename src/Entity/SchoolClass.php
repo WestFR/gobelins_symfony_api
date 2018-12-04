@@ -32,7 +32,7 @@ class SchoolClass
      * @Assert\NotBlank()
      *
      * @JMS\Expose()
-     * @JMS\Groups({"class_item"})
+     * @JMS\Groups({"parent_list", "class_item"})
      *
      * @SWG\Property(description="Start year value.")
      */
@@ -43,7 +43,7 @@ class SchoolClass
      * @Assert\NotBlank()
      *
      * @JMS\Expose()
-     * @JMS\Groups({"class_item"})
+     * @JMS\Groups({"parent_list", "class_item"})
      *
      * @SWG\Property(description="End year value")
      */
@@ -64,7 +64,7 @@ class SchoolClass
      * @ORM\JoinColumn(nullable=false)
      *
      * @JMS\Expose()
-     * @JMS\Groups({"class_item"})
+     * @JMS\Groups({"parent_list", "class_item"})
      *
      * @SWG\Property(description="Teacher of the class.")
      */
@@ -75,7 +75,7 @@ class SchoolClass
      * @ORM\JoinColumn(nullable=false, referencedColumnName="label")
      *
      * @JMS\Expose()
-     * @JMS\Groups({"class_item"})
+     * @JMS\Groups({"parent_list", "class_item"})
      *
      * @SWG\Property(description="School level of the class.")
      */

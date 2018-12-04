@@ -38,6 +38,15 @@ class AdminController extends Controller {
      *     description="Return all users."
      * )
      *
+     * @SWG\Parameter(
+     *     name="X-AUTH-TOKEN",
+     *     in="header",
+     *     required=true,
+     *     type="string",
+     *     default="43fd8a51ae2758bb8176bff0c16",
+     *     description="X-AUTH-TOKEN (api token authorization)"
+     * )
+     *
      * @SWG\Tag(name="Admin")
      *
      */
@@ -63,10 +72,24 @@ class AdminController extends Controller {
      *     description="Add specified user to admin users."
      * )
      *
+     * @SWG\Parameter(
+     *     name="X-AUTH-TOKEN",
+     *     in="header",
+     *     required=true,
+     *     type="string",
+     *     default="43fd8a51ae2758bb8176bff0c16",
+     *     description="X-AUTH-TOKEN (api token authorization)"
+     * )
+     *
      * @SWG\Tag(name="Admin")
      *
+     * @deprecated
      */
     public function addUserAdmin($userId) {
+        $data = array('code' => Response::HTTP_OK, 'message' => 'This route is not available for this moment.');
+        return new JsonResponse($data, Response::HTTP_OK);
+
+
         $user = $this->getDoctrine()->getRepository(User::class)->find($userId);
 
         if($user == null) {
@@ -89,6 +112,15 @@ class AdminController extends Controller {
      * @SWG\Response(
      *     response=200,
      *     description="Remove authenticated admin user to admin users."
+     * )
+     *
+     * @SWG\Parameter(
+     *     name="X-AUTH-TOKEN",
+     *     in="header",
+     *     required=true,
+     *     type="string",
+     *     default="43fd8a51ae2758bb8176bff0c16",
+     *     description="X-AUTH-TOKEN (api token authorization)"
      * )
      *
      * @SWG\Tag(name="Admin")
