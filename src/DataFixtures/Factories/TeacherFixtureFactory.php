@@ -15,6 +15,7 @@ class TeacherFixtureFactory extends FixtureFactory
     /**
      * @param Generator $generator
      * @return UserTeacher
+     * @throws \Exception
      */
     public static function build(Generator $generator)
     {

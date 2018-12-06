@@ -11,8 +11,11 @@ use App\Entity\Action;
 use App\Entity\Children;
 use App\Entity\SchoolClass;
 use App\Entity\SchoolLevel;
+use App\Entity\UserParent;
+use App\Entity\UserTeacher;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\Persistence\ObjectManager;
+use Symfony\Component\Security\Core\Encoder\EncoderFactoryInterface;
 
 /**
  * Class AppFixtures
@@ -20,6 +23,19 @@ use Doctrine\Common\Persistence\ObjectManager;
  */
 class AppFixtures extends Fixture
 {
+    /**
+     * @var EncoderFactoryInterface
+     */
+    private $encoderFactory;
+
+    /**
+     * AppFixtures constructor.
+     * @param EncoderFactoryInterface $encoderFactory
+     */
+    public function __construct(EncoderFactoryInterface $encoderFactory)
+    {
+        $this->encoderFactory = $encoderFactory;
+    }
 
     /**
      * @param ObjectManager $manager
@@ -29,6 +45,9 @@ class AppFixtures extends Fixture
         $this->loadSchool($manager);
     }
 
+    /**
+     * @param ObjectManager $manager
+     */
     private function loadSchool(ObjectManager $manager)
     {
         $schoolLevels = [];
@@ -53,11 +72,15 @@ class AppFixtures extends Fixture
      */
     private function loadClass(ObjectManager $manager, SchoolLevel $schoolLevel)
     {
-        $teacher = TeacherFixtureFactory::buildItem($manager);
+        $encoderFactory = $this->encoderFactory;
+        $teacher = TeacherFixtureFactory::buildItem($manager, function ($teacher) use ($encoderFactory) {
+            /** @var UserTeacher $teacher */
+            $teacher->setPassword($encoderFactory->getEncoder($teacher)->encodePassword('0000', null));
+        });
 
         SchoolClassFixtureFactory::buildItem(
             $manager,
-            function ($schoolClass) use ($manager, $teacher, $schoolLevel) {
+            function ($schoolClass) use ($manager, $teacher, $schoolLevel, $encoderFactory) {
 
                 /** @var SchoolClass $schoolClass */
                 $schoolClass->setTeacher($teacher);
@@ -66,10 +89,13 @@ class AppFixtures extends Fixture
                 $childrens = ChildrenFixtureFactory::buildArray(
                     $manager,
                     20,
-                    function ($children) use ($manager, $teacher, $schoolClass) {
+                    function ($children) use ($manager, $teacher, $schoolClass, $encoderFactory) {
 
                         /** @var Children $children */
-                        $children->setParent(ParentFixtureFactory::buildItem($manager));
+                        $children->setParent(ParentFixtureFactory::buildItem($manager, function ($parent) use ($encoderFactory) {
+                            /** @var UserParent $parent */
+                            $parent->setPassword($encoderFactory->getEncoder($parent)->encodePassword('0000', null));
+                        }));
                         $children->setSchoolClass($schoolClass);
 
                         for ($i = 0; $i < 10; $i++) {
