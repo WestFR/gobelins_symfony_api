@@ -5,6 +5,7 @@
 # https://symfony.com/doc/current/best_practices/configuration.html#application-related-configuration
 parameters:
     locale: 'en'
+    organization_email: 'lucienalbert.perso@gmail.com'
 
 services:
     # default configuration for services in *this* file
@@ -24,9 +25,14 @@ services:
         resource: '../src/Controller'
         tags: ['controller.service_arguments']
 
+    # explicitly configure the service
+    mailer.score:
+        class: App\Services\ScoreMailer\ScoreMailerService
+        tags: ['score_mailer']
+        arguments:
+            $mailer: '@swiftmailer.mailer.default'
+            $mailFrom: '%organization_email%'
+
     App\Security\Authentication\ApiTokenAuthenticator:
         arguments:
             $encoderFactory: '@security.encoder_factory.generic'
-
-    # add more service definitions when explicit configuration is needed
-    # please note that last definitions always *replace* previous ones
