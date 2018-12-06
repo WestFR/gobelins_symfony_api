@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use Nelmio\ApiDocBundle\Annotation\Model;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Swagger\Annotations as SWG;
 
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -10,12 +11,11 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 use JMS\Serializer\SerializerInterface;
-use JMS\Serializer\SerializationContext;
 use JMS\Serializer\DeserializationContext;
 
+use Symfony\Component\Validator\ConstraintViolationListInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
-use Symfony\Component\Routing\Annotation\Route;
 use FOS\RestBundle\Controller\Annotations as Rest;
 
 use App\Entity\User;
@@ -23,14 +23,13 @@ use App\Entity\UserParent;
 use App\Entity\Children;
 
 /**
- * @Route("/api/parent", name="api_parent")
+ * Class UserParentController
+ * @package App\Controller
  */
-class UserParentController extends AbstractController {
+class UserParentController extends AbstractController
+{
 
     /**
-     *
-     * @Rest\Get("/childrens")
-     *
      * @SWG\Response(
      *     response=200,
      *     description="Return the children(s) of authenticated user.",
@@ -50,43 +49,30 @@ class UserParentController extends AbstractController {
      * )
      *
      * @SWG\Tag(name="Parent")
-     *
+     * @param string $parentId
+     * @return JsonResponse
      */
-    public function getUserChildrens(Request $request, SerializerInterface $serializer) {
-        $serializationContext = SerializationContext::create();
+    public function getParentsChildrensAction(string $parentId)
+    {
+        /** @var UserParent $parent */
+        $parent = $this->getDoctrine()->getRepository(User::class)->find($parentId);
 
-        $apiToken = $request->headers->get('X-AUTH-TOKEN');
-
-        $user = $this->getDoctrine()->getRepository(User::class)->findOneBy(['apiToken' => $apiToken]);
-
-        if($user == null) {
-            $data = array('code' => Response::HTTP_UNAUTHORIZED, 'message' => 'User not found, token is wrong or user is already logout.');
-            return new JsonResponse($data, Response::HTTP_UNAUTHORIZED);
+        if ($parent == null) {
+            return $this->resError(Response::HTTP_BAD_REQUEST, 'Parent id not found');
         }
 
-        $id = $user->getId();
-        $userChildren = $this->getDoctrine()->getRepository(UserParent::class)->findOneBy(['id' => $id]);
-
-        if($userChildren == null) {
-            $data = array('code' => Response::HTTP_UNAUTHORIZED, 'message' => 'User (parent) not found, this user is not a parent type.');
-            return new JsonResponse($data, Response::HTTP_UNAUTHORIZED);
+        if (!$parent instanceof UserParent) {
+            return $this->resError(Response::HTTP_BAD_REQUEST, 'User (parent) not found, this user is not a parent type.');
         }
 
-        $userChildren = $userChildren->getChildrens();
-
-        if (count($userChildren) == 0) {
-            $data = array('code' => Response::HTTP_OK, 'message' => 'No children for this user, create this before !');
-            return new JsonResponse($data, Response::HTTP_UNAUTHORIZED);
+        if ($parent->getApiToken() !== $this->getToken()) {
+            return $this->resError(Response::HTTP_UNAUTHORIZED, 'User not found, token is wrong or user is already logout.');
         }
 
-        $groups = $serializationContext->setGroups(['parent_list']);
-        return new Response($serializer->serialize($userChildren, 'json', $groups), Response::HTTP_OK);
+        return $this->resSuccess($parent->getChildrens(), ['parent_list']);
     }
 
     /**
-     *
-     * @Rest\Get("/childrens/{childrenId}")
-     *
      * @SWG\Response(
      *     response=200,
      *     description="Return the specified children of authenticated user.",
@@ -107,41 +93,31 @@ class UserParentController extends AbstractController {
      *
      * @SWG\Tag(name="Parent")
      *
+     * @param $parentId
+     * @param $childrenId
+     * @return JsonResponse
      */
-    public function getUserChildren($childrenId,  Request $request, SerializerInterface $serializer) {
-        $serializationContext = SerializationContext::create();
+    public function getParentsChildrenAction(string $parentId, string $childrenId)
+    {
+        /** @var UserParent $parent */
+        $parent = $this->getDoctrine()->getRepository(User::class)->find($parentId);
 
-        $apiToken = $request->headers->get('X-AUTH-TOKEN');
-
-        $user = $this->getDoctrine()->getRepository(User::class)->findOneBy(['apiToken' => $apiToken]);
-
-        if($user == null) {
-            $data = array('code' => Response::HTTP_UNAUTHORIZED, 'message' => 'User not found, token is wrong or user is already logout.');
-            return new JsonResponse($data, Response::HTTP_UNAUTHORIZED);
+        if ($parent == null) {
+            return $this->resError(Response::HTTP_BAD_REQUEST, 'Parent id not found');
         }
 
-        $id = $user->getId();
-        $userChildren = $this->getDoctrine()->getRepository(UserParent::class)->findOneBy(['id' => $id]);
-
-        if($userChildren == null) {
-            $data = array('code' => Response::HTTP_UNAUTHORIZED, 'message' => 'User (parent) not found, this user is not a parent type.');
-            return new JsonResponse($data, Response::HTTP_UNAUTHORIZED);
+        if (!$parent instanceof UserParent) {
+            return $this->resError(Response::HTTP_BAD_REQUEST, 'User (parent) not found, this user is not a parent type.');
         }
 
-        $userChildren = $userChildren->getSpecificChildren($childrenId);
-        if($userChildren == null) {
-            $data = array('code' => Response::HTTP_UNAUTHORIZED, 'message' => 'Children not found for this user, this childrenId is not valid.');
-            return new JsonResponse($data, Response::HTTP_UNAUTHORIZED);
+        if ($parent->getApiToken() !== $this->getToken()) {
+            return $this->resError(Response::HTTP_UNAUTHORIZED, 'User not found, token is wrong or user is already logout.');
         }
 
-        $groups = $serializationContext->setGroups(['parent_list']);
-        return new Response($serializer->serialize($userChildren, 'json', $groups), Response::HTTP_OK);
+        return $this->resSuccess($parent->getChildren($childrenId), ['parent_list']);
     }
 
     /**
-     *
-     * @Rest\Post("/childrens")
-     *
      * @SWG\Response(
      *     response=200,
      *     description="Create the specified children of authenticated user.",
@@ -170,51 +146,45 @@ class UserParentController extends AbstractController {
      *
      * @SWG\Tag(name="Parent")
      *
+     * @ParamConverter("children", converter="fos_rest.request_body", options={"groups"={"children_create"}})
+     *
+     * @param string $parentId
+     * @param Children $children
+     * @param ConstraintViolationListInterface $violations
+     * @return JsonResponse
      */
-    public function createUserChildren(Request $request, SerializerInterface $serializer, ValidatorInterface $validator) {
-        $apiToken = $request->headers->get('X-AUTH-TOKEN');
-        $serializationContext = DeserializationContext::create();
+    public function postParentsChildrenAction(string $parentId, Children $children, ConstraintViolationListInterface $violations)
+    {
+        /** @var UserParent $parent */
+        $parent = $this->getDoctrine()->getRepository(User::class)->find($parentId);
 
-        $user = $this->getDoctrine()->getRepository(User::class)->findOneBy(['apiToken' => $apiToken]);
-
-        if($user == null) {
-            $data = array('code' => Response::HTTP_UNAUTHORIZED, 'message' => 'User not found, token is wrong or user is already logout.');
-            return new JsonResponse($data, Response::HTTP_UNAUTHORIZED);
+        if ($parent == null) {
+            return $this->resError(Response::HTTP_BAD_REQUEST, 'Parent id not found');
         }
 
-        $id = $user->getId();
-        $userChildren = $this->getDoctrine()->getRepository(UserParent::class)->findOneBy(['id' => $id]);
-
-        if($userChildren == null) {
-            $data = array('code' => Response::HTTP_UNAUTHORIZED, 'message' => 'User (parent) not found, this user is not a parent type.');
-            return new JsonResponse($data, Response::HTTP_UNAUTHORIZED);
+        if (!$parent instanceof UserParent) {
+            return $this->resError(Response::HTTP_BAD_REQUEST, 'User (parent) not found, this user is not a parent type.');
         }
 
-        $createChildren = $serializer->deserialize($request->getContent(), Children::class, 'json', $serializationContext->setGroups(['children_create']));
-        $constraintValidator = $validator->validate($createChildren);
-
-        if($constraintValidator->count() == 0) {
-
-            $createChildren->setParent($userChildren);
-            $userChildren = $userChildren->addChildren($createChildren);
-
-            $em = $this->getDoctrine()->getManager();
-            $em->persist($createChildren);
-            $em->persist($userChildren);
-            $em->flush();
-
-            $data = array('code' => Response::HTTP_OK, 'message' => 'Children are added to current user.');
-            return new JsonResponse($data, Response::HTTP_OK);
-        } else {
-            return new JsonResponse($serializer->serialize($constraintValidator, 'json'), Response::HTTP_BAD_REQUEST);
+        if ($parent->getApiToken() !== $this->getToken()) {
+            return $this->resError(Response::HTTP_UNAUTHORIZED, 'User not found, token is wrong or user is already logout.');
         }
+
+        if ($violations->count() > 0) {
+            return $this->resError(Response::HTTP_BAD_REQUEST, $violations);
+        }
+
+        $parent->addChildren($children);
+
+        $em = $this->getDoctrine()->getManager();
+        $em->persist($parent);
+        $em->flush();
+
+        return $this->resSuccess($children, [],Response::HTTP_OK, 'Children are added to current user.');
     }
 
 
     /**
-     *
-     * @Rest\Put("/childrens/{childrenId}")
-     *
      * @SWG\Response(
      *     response=200,
      *     description="Update the specified children of authenticated user."
@@ -244,57 +214,47 @@ class UserParentController extends AbstractController {
      *
      * @SWG\Tag(name="Parent")
      *
+     * @ParamConverter("updatedChildren", converter="fos_rest.request_body", options={"groups"={"children_create"}})
+     *
+     * @param string $parentId
+     * @param string $childrenId
+     * @param Children $updatedChildren
+     * @param ConstraintViolationListInterface $violations
+     * @return JsonResponse
      */
-    public function updateUserChildren($childrenId, Request $request, SerializerInterface $serializer, ValidatorInterface $validator) {
-        $apiToken = $request->headers->get('X-AUTH-TOKEN');
-        $serializationContext = DeserializationContext::create();
+    public function putParentsChildrenAction(string $parentId, string $childrenId, Children $updatedChildren, ConstraintViolationListInterface $violations)
+    {
+        $parent = $this->getDoctrine()->getRepository(User::class)->find($parentId);
 
-        $user = $this->getDoctrine()->getRepository(User::class)->findOneBy(['apiToken' => $apiToken]);
-
-        if($user == null) {
-            $data = array('code' => Response::HTTP_UNAUTHORIZED, 'message' => 'User not found, token is wrong or user is already logout.');
-            return new JsonResponse($data, Response::HTTP_UNAUTHORIZED);
+        if ($parent == null) {
+            return $this->resError(Response::HTTP_BAD_REQUEST, 'Parent id not found');
         }
 
-        $id = $user->getId();
-        $userChildren = $this->getDoctrine()->getRepository(UserParent::class)->findOneBy(['id' => $id]);
-
-        if($userChildren == null) {
-            $data = array('code' => Response::HTTP_UNAUTHORIZED, 'message' => 'User (parent) not found, this user is not a parent type.');
-            return new JsonResponse($data, Response::HTTP_UNAUTHORIZED);
+        if (!$parent instanceof UserParent) {
+            return $this->resError(Response::HTTP_BAD_REQUEST, 'User (parent) not found, this user is not a parent type.');
         }
 
-        $userChildren = $userChildren->getSpecificChildren($childrenId);
-        if($userChildren == null) {
-            $data = array('code' => Response::HTTP_UNAUTHORIZED, 'message' => 'Children not found for this user, this childrenId is not valid.');
-            return new JsonResponse($data, Response::HTTP_UNAUTHORIZED);
+        if ($parent->getApiToken() !== $this->getToken()) {
+            return $this->resError(Response::HTTP_UNAUTHORIZED, 'User not found, token is wrong or user is already logout.');
         }
 
-        $updateChildren = $serializer->deserialize($request->getContent(), Children::class, 'json', $serializationContext->setGroups(['children_create']));
-        $constraintValidator = $validator->validate($updateChildren);
-
-        if($constraintValidator->count() == 0) {
-            $childrenToUpdated = $this->getDoctrine()->getRepository(Children::class)->findOneBy(['id' => $childrenId]);
-
-            if($childrenToUpdated == null) {
-                $data = array('code' => Response::HTTP_UNAUTHORIZED, 'message' => 'Children not found for this user, this childrenId is not valid.');
-                return new JsonResponse($data, Response::HTTP_UNAUTHORIZED);
-            }
-
-            $childrenToUpdated->update($updateChildren);
-            $this->getDoctrine()->getManager()->flush();
-
-            $data = array('code' => Response::HTTP_OK, 'message' => 'Children are updated.');
-            return new JsonResponse($data, Response::HTTP_OK);
-        } else {
-            return new JsonResponse($serializer->serialize($constraintValidator, 'json'), Response::HTTP_BAD_REQUEST);
+        if ($violations->count() > 0) {
+            return $this->resError(Response::HTTP_BAD_REQUEST, $violations);
         }
+
+        $children = $this->getDoctrine()->getRepository(Children::class)->find($childrenId);
+
+        if ($children == null) {
+            return $this->resError(Response::HTTP_UNAUTHORIZED, 'Children not found for this user, this childrenId is not valid.');
+        }
+
+        $children->update($updatedChildren);
+        $this->getDoctrine()->getManager()->flush();
+
+        return $this->resSuccess($children);
     }
 
     /**
-     *
-     * @Rest\Delete("/childrens/{childrenId}")
-     *
      * @SWG\Response(
      *     response=200,
      *     description="Delete the specified children for authenticated user."
@@ -311,37 +271,36 @@ class UserParentController extends AbstractController {
      *
      * @SWG\Tag(name="Parent")
      *
+     * @param string $parentId
+     * @param string $childrenId
+     * @return JsonResponse
      */
-    public function deleteChildren($childrenId,  Request $request) {
-        $apiToken = $request->headers->get('X-AUTH-TOKEN');
+    public function deleteParentsChildrenAction(string $parentId, string $childrenId)
+    {
+        $parent = $this->getDoctrine()->getRepository(User::class)->find($parentId);
 
-        $user = $this->getDoctrine()->getRepository(User::class)->findOneBy(['apiToken' => $apiToken]);
-
-        if($user == null) {
-            $data = array('code' => Response::HTTP_UNAUTHORIZED, 'message' => 'User not found, token is wrong or user is already logout.');
-            return new JsonResponse($data, Response::HTTP_UNAUTHORIZED);
+        if ($parent == null) {
+            return $this->resError(Response::HTTP_BAD_REQUEST, 'Parent id not found');
         }
 
-        $id = $user->getId();
-        $userChildren = $this->getDoctrine()->getRepository(UserParent::class)->findOneBy(['id' => $id]);
-
-        if($userChildren == null) {
-            $data = array('code' => Response::HTTP_UNAUTHORIZED, 'message' => 'User (parent) not found, this user is not a parent type.');
-            return new JsonResponse($data, Response::HTTP_UNAUTHORIZED);
+        if (!$parent instanceof UserParent) {
+            return $this->resError(Response::HTTP_BAD_REQUEST, 'User (parent) not found, this user is not a parent type.');
         }
 
-        $userToRemove = $userChildren->getSpecificChildren($childrenId);
-
-        if($userToRemove == null) {
-            $data = array('code' => Response::HTTP_UNAUTHORIZED, 'message' => 'Children not found for this user, this childrenId is not valid.');
-            return new JsonResponse($data, Response::HTTP_UNAUTHORIZED);
+        if ($parent->getApiToken() !== $this->getToken()) {
+            return $this->resError(Response::HTTP_UNAUTHORIZED, 'User not found, token is wrong or user is already logout.');
         }
 
-        $this->getDoctrine()->getManager()->remove($userToRemove);
+        $children = $parent->getChildren($childrenId);
+
+        if ($children == null) {
+            return $this->resError(Response::HTTP_UNAUTHORIZED, 'Children not found for this user, this childrenId is not valid.');
+        }
+
+        $this->getDoctrine()->getManager()->remove($children);
         $this->getDoctrine()->getManager()->flush();
 
-        $data = array('code' => Response::HTTP_OK, 'message' => 'Children are removed.');
-        return new JsonResponse($data, Response::HTTP_OK);
+        return $this->resSuccess("", [], Response::HTTP_OK, 'Children are removed.');
     }
 
 }

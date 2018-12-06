@@ -2,7 +2,7 @@
 
 namespace App\Controller;
 
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -11,6 +11,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 use Symfony\Component\Security\Core\Encoder\EncoderFactoryInterface;
+use Symfony\Component\Validator\ConstraintViolationListInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 use JMS\Serializer\SerializerInterface;
@@ -25,14 +26,12 @@ use Swagger\Annotations as SWG;
 use App\Entity\SchoolLevel;
 
 /**
- * @Route("/api/schools/levels", name="api_schoolLevels")
+ * Class SchoolLevelController
+ * @package App\Controller
  */
-class SchoolLevelController extends Controller {
+class SchoolLevelController extends AbstractController {
 
     /**
-     *
-     * @Rest\Get("/")
-     *
      * @SWG\Response(
      *     response=200,
      *     description="Return all schools level."
@@ -50,23 +49,20 @@ class SchoolLevelController extends Controller {
      * @SWG\Tag(name="SchoolLevel")
      *
      */
-    public function getAll(SerializerInterface $serializer) {
-        $serializationContext = SerializationContext::create();
-
+    public function getLevelsAction()
+    {
         $schoolLevels = $this->getDoctrine()->getRepository(SchoolLevel::class)->findAll();
 
         if ($schoolLevels == null) {
+            // Todo: Use response parent method
             $data = array('code' => Response::HTTP_OK, 'message' => 'No school level for this moment, create one before !');
             return new JsonResponse($data, Response::HTTP_UNAUTHORIZED);
         }
 
-        return new Response($serializer->serialize($schoolLevels, 'json', $serializationContext->setGroups(['school_name'])),  Response::HTTP_OK);
+        return $this->resSuccess($schoolLevels, ['school_name']);
     }
 
     /**
-     *
-     * @Rest\Get("/{name}")
-     *
      * @SWG\Response(
      *     response=200,
      *     description="Return one specified school level."
@@ -83,24 +79,22 @@ class SchoolLevelController extends Controller {
      *
      * @SWG\Tag(name="SchoolLevel")
      *
+     * @param string $label
+     * @return JsonResponse|Response
      */
-    public function getOne($name, SerializerInterface $serializer) {
-        $serializationContext = SerializationContext::create();
-
-        $schoolLevel = $this->getDoctrine()->getRepository(SchoolLevel::class)->findOneBy(['label' => $name]);
+    public function getLevelAction(string $label) {
+        $schoolLevel = $this->getDoctrine()->getRepository(SchoolLevel::class)->find($label);
 
         if ($schoolLevel == null) {
+            // Todo: Use response parent method
             $data = array('code' => Response::HTTP_OK, 'message' => 'No school level for this school name, create this before !');
             return new JsonResponse($data, Response::HTTP_UNAUTHORIZED);
         }
 
-        return new Response($serializer->serialize($schoolLevel, 'json', $serializationContext->setGroups(['school_all'])), Response::HTTP_OK);
+        return $this->resSuccess($schoolLevel, ['school_all']);
     }
 
     /**
-     *
-     * @Rest\Post("/")
-     *
      * @SWG\Response(
      *     response=200,
      *     description="Create one specified school level."
@@ -128,29 +122,27 @@ class SchoolLevelController extends Controller {
      *
      * @SWG\Tag(name="SchoolLevel")
      *
+     * @ParamConverter("schoolLevel", converter="fos_rest.request_body")
+     *
+     * @param SchoolLevel $schoolLevel
+     * @param ConstraintViolationListInterface $violations
+     * @return JsonResponse
      */
-    public function createOne(Request $request, SerializerInterface $serializer, ValidatorInterface $validator, EncoderFactoryInterface $encoderFactory) {
-        $serializationContext = DeserializationContext::create();
-
-        $schoolLevel = $serializer->deserialize($request->getContent(), SchoolLevel::class, 'json', $serializationContext->setGroups(['school_name']));
-        $constraintValidator = $validator->validate($schoolLevel);
-
-        if($constraintValidator->count() == 0) {
-            $em = $this->getDoctrine()->getManager();
-            $em->persist($schoolLevel);
-            $em->flush();
-
-            $data = array('code' => Response::HTTP_OK, 'message' => 'School level are created.');
-            return new JsonResponse($data, Response::HTTP_OK);
-        } else {
-            return new JsonResponse($serializer->serialize($constraintValidator, 'json'), Response::HTTP_BAD_REQUEST);
+    public function postLevelAction(SchoolLevel $schoolLevel, ConstraintViolationListInterface $violations) {
+        if ($violations->count() > 0) {
+            return $this->resError(Response::HTTP_BAD_REQUEST, $violations);
         }
+
+        $em = $this->getDoctrine()->getManager();
+        $em->persist($schoolLevel);
+        $em->flush();
+
+        // Todo: Use response parent method
+        $data = array('code' => Response::HTTP_OK, 'message' => 'School level are created.');
+        return new JsonResponse($data, Response::HTTP_OK);
     }
 
     /**
-     *
-     * @Rest\Put("/{name}")
-     *
      * @SWG\Response(
      *     response=200,
      *     description="Updated the specified school level."
@@ -178,35 +170,32 @@ class SchoolLevelController extends Controller {
      *
      * @SWG\Tag(name="SchoolLevel")
      *
+     * @ParamConverter("updatedLevel", converter="fos_rest.request_body")
+     *
+     * @param string $label
+     * @param SchoolLevel $updatedLevel
+     * @param ConstraintViolationListInterface $violations
+     * @return JsonResponse
      */
-    public function updateOne($name, Request $request, SerializerInterface $serializer, ValidatorInterface $validator) {
-        $serializationContext = DeserializationContext::create();
+    public function putLevelAction(string $label, SchoolLevel $updatedLevel, ConstraintViolationListInterface $violations)
+    {
+        $level = $this->getDoctrine()->getRepository(SchoolLevel::class)->find($label);
 
-        $schoolLevel = $this->getDoctrine()->getRepository(SchoolLevel::class)->findOneBy(['label' => $name]);
-
-        if ($schoolLevel == null) {
-            $data = array('code' => Response::HTTP_UNAUTHORIZED, 'message' => 'School level are not found, wrong name or already delete.');
-            return new JsonResponse($data, Response::HTTP_UNAUTHORIZED);
+        if (is_null($level)) {
+            return $this->resError(Response::HTTP_BAD_REQUEST, 'School level not found');
         }
 
-        $updatedSchoolLevel = $serializer->deserialize($request->getContent(), SchoolLevel::class, 'json', $serializationContext->setGroups(['school_name']));
-        $constraintValidator = $validator->validate($updatedSchoolLevel);
-
-        if ($constraintValidator->count() == 0) {
-            $schoolLevel->update($updatedSchoolLevel);
-            $this->getDoctrine()->getManager()->flush();
-
-            $data = array('code' => Response::HTTP_OK, 'message' => 'School level are updated.');
-            return new JsonResponse($data, Response::HTTP_OK);
-        } else {
-            return new JsonResponse($serializer->serialize($constraintValidator, 'json'), Response::HTTP_BAD_REQUEST);
+        if ($violations->count() > 0) {
+            return $this->resError(Response::HTTP_BAD_REQUEST, $violations);
         }
+
+        $level->update($updatedLevel);
+        $this->getDoctrine()->getManager()->flush();
+
+        return $this->resSuccess($level, [], Response::HTTP_OK, 'School level are updated.');
     }
 
     /**
-     *
-     * @Rest\Delete("/{name}")
-     *
      * @SWG\Response(
      *     response=200,
      *     description="Delete the specified school level."
@@ -223,9 +212,12 @@ class SchoolLevelController extends Controller {
      *
      * @SWG\Tag(name="SchoolLevel")
      *
+     * @param string $label
+     * @return JsonResponse
      */
-    public function deleteOne($name) {
-        $schoolToRemove = $this->getDoctrine()->getRepository(SchoolLevel::class)->findOneBy(['label' => $name]);
+    public function deleteLevelAction(string $label)
+    {
+        $schoolToRemove = $this->getDoctrine()->getRepository(SchoolLevel::class)->findOneBy(['label' => $label]);
 
         if ($schoolToRemove == null) {
             $data = array('code' => Response::HTTP_UNAUTHORIZED, 'message' => 'School level are not found, wrong name or already delete.');
@@ -235,6 +227,7 @@ class SchoolLevelController extends Controller {
         $this->getDoctrine()->getManager()->remove($schoolToRemove);
         $this->getDoctrine()->getManager()->flush();
 
+        // Todo: Use response parent method
         $data = array('code' => Response::HTTP_OK, 'message' => 'School level are removed.');
         return new JsonResponse($data, Response::HTTP_OK);
     }

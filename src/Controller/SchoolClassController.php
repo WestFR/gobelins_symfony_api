@@ -7,6 +7,7 @@ use App\Entity\SchoolClass;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Validator\ConstraintViolationListInterface;
+use Swagger\Annotations as SWG;
 
 /**
  * Class SchoolClassController
@@ -15,6 +16,13 @@ use Symfony\Component\Validator\ConstraintViolationListInterface;
 class SchoolClassController extends AbstractController
 {
     /**
+     * @SWG\Tag(name="Class")
+     *
+     * @SWG\Response(
+     *     response=200,
+     *     description="Return classes list."
+     * )
+     *
      * @return \Symfony\Component\HttpFoundation\JsonResponse
      */
     public function getClassesAction()
@@ -25,6 +33,13 @@ class SchoolClassController extends AbstractController
     }
 
     /**
+     * @SWG\Tag(name="Class")
+     *
+     * @SWG\Response(
+     *     response=200,
+     *     description="Return class item."
+     * )
+     *
      * @param int $classId
      * @return \Symfony\Component\HttpFoundation\JsonResponse
      */
@@ -36,6 +51,13 @@ class SchoolClassController extends AbstractController
     }
 
     /**
+     * @SWG\Tag(name="Class")
+     *
+     * @SWG\Response(
+     *     response=201,
+     *     description="Add children in class."
+     * )
+     *
      * @ParamConverter("children", converter="fos_rest.request_body")
      *
      * @param int $classId
@@ -60,6 +82,17 @@ class SchoolClassController extends AbstractController
         return $this->resSuccess($class, ['class_item'], Response::HTTP_CREATED);
     }
 
+    /**
+     * @SWG\Tag(name="Class")
+     *
+     * @SWG\Response(
+     *     response=200,
+     *     description="Delete children in class."
+     * )
+     *
+     * @param int $classId
+     * @param int $childrenId
+     */
     public function deleteClassChildrenAction(
         int $classId,
         int $childrenId
@@ -78,6 +111,13 @@ class SchoolClassController extends AbstractController
     }
 
     /**
+     * @SWG\Tag(name="Class")
+     *
+     * @SWG\Response(
+     *     response=200,
+     *     description="Return childrens in class."
+     * )
+     *
      * @param int $classId
      * @return \Symfony\Component\HttpFoundation\JsonResponse
      */

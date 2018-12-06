@@ -3,9 +3,12 @@
 namespace App\Controller;
 
 use App\Entity\User;
+use App\Entity\UserParent;
+use App\Entity\UserTeacher;
 use FOS\RestBundle\Controller\FOSRestController;
 use JMS\Serializer\SerializationContext;
 use JMS\Serializer\SerializerBuilder;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
@@ -29,13 +32,22 @@ abstract class AbstractController extends FOSRestController
 
     /**
      * AbstractController constructor.
+     * @param ContainerInterface $container
      * @param RequestStack $requestStack
      */
-    public function __construct(RequestStack $requestStack)
+    public function __construct(ContainerInterface $container, RequestStack $requestStack)
     {
         $this->serializer = SerializerBuilder::create()->build();
         $this->request = $requestStack->getCurrentRequest();
-        // dd($this->getMe());
+        $this->container = $container;
+    }
+
+    /**
+     * @return string|string[]|null
+     */
+    public function getToken()
+    {
+        return $this->request->headers->get('X-AUTH-TOKEN');
     }
 
     /**
@@ -44,16 +56,22 @@ abstract class AbstractController extends FOSRestController
      * @param null $data
      * @param array $groups
      * @param int $status
+     * @param string $message
      * @return JsonResponse
      */
-    public function resSuccess($data = null, array $groups = [], int $status = Response::HTTP_OK)
+    public function resSuccess($data = null, array $groups = [], int $status = Response::HTTP_OK, string $message = "")
     {
+        $content = [
+            'code' => $status,
+            'message' => $message,
+            'data' => $data
+        ];
         if (count($groups) > 0) {
-            $data = $this->serializer->serialize($data, 'json', SerializationContext::create()->setGroups($groups));
+            $content = $this->serializer->serialize($content, 'json', SerializationContext::create()->setGroups($groups));
         } else {
-            $data = $this->serializer->serialize($data, 'json');
+            $content = $this->serializer->serialize($content, 'json');
         }
-        return new JsonResponse($data, $status);
+        return new JsonResponse($content, $status, [], true);
     }
 
     /**
@@ -65,16 +83,19 @@ abstract class AbstractController extends FOSRestController
      */
     public function resError(int $status, $message)
     {
-        $data = [
+        $content = [
             'code' => $status,
             'message' => $message
         ];
-        return new JsonResponse($data, $status);
+        return new JsonResponse($content, $status);
     }
 
+    /**
+     * @return null|User|UserTeacher|UserParent
+     */
     public function getMe()
     {
-        $token = $this->request->headers->get('X-AUTH-TOKEN');
+        $token = $this->request->headers->get('x-auth-token');
         return is_null($token) ? null : $this->getDoctrine()->getRepository(User::class)->findOneBy(['apiToken' => $token]);
     }
 }

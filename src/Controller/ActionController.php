@@ -2,38 +2,22 @@
 
 namespace App\Controller;
 
-use App\Entity\ActionCustom;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-
-use Symfony\Component\Routing\Annotation\Route;
-
+use App\Entity\UserTeacher;
+use App\Entity\Action;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-
 use Symfony\Component\Security\Core\Encoder\EncoderFactoryInterface;
-use Symfony\Component\Validator\Validator\ValidatorInterface;
-
-use JMS\Serializer\SerializerInterface;
-use JMS\Serializer\SerializationContext;
-use JMS\Serializer\DeserializationContext;
-
-use FOS\RestBundle\Controller\Annotations as Rest;
-
-use Nelmio\ApiDocBundle\Annotation\Model;
+use Symfony\Component\Validator\ConstraintViolationListInterface;
 use Swagger\Annotations as SWG;
 
-use App\Entity\Action;
-
 /**
- * @Route("/api/", name="api_actions")
+ * Class ActionController
+ * @package App\Controller
  */
-class ActionController extends Controller {
+class ActionController extends AbstractController {
 
     /**
-     *
-     * @Rest\Get("actions/")
-     *
      * @SWG\Response(
      *     response=200,
      *     description="Return a collection of actions (all actions)."
@@ -48,26 +32,17 @@ class ActionController extends Controller {
      *     description="X-AUTH-TOKEN (api token authorization)"
      * )
      *
-     * @SWG\Tag(name="Actions")
+     * @SWG\Tag(name="Action")
      *
      */
-    public function getAll(SerializerInterface $serializer) {
-        $serializationContext = SerializationContext::create();
-
+    public function getActionsAction()
+    {
         $actions = $this->getDoctrine()->getRepository(Action::class)->findAll();
 
-        if ($actions == null) {
-            $data = array('code' => Response::HTTP_OK, 'message' => 'No action for this moment, create one before !');
-            return new JsonResponse($data, Response::HTTP_UNAUTHORIZED);
-        }
-
-        return new Response($serializer->serialize($actions, 'json', $serializationContext->setGroups(['action_list'])),  Response::HTTP_OK);
+        return $this->resSuccess($actions, ['action_list']);
     }
 
     /**
-     *
-     * @Rest\Get("actions/{actionId}")
-     *
      * @SWG\Response(
      *     response=200,
      *     description="Return one specified action."
@@ -82,26 +57,23 @@ class ActionController extends Controller {
      *     description="X-AUTH-TOKEN (api token authorization)"
      * )
      *
-     * @SWG\Tag(name="Actions")
+     * @SWG\Tag(name="Action")
      *
+     * @param string $actionId
+     * @return JsonResponse|Response
      */
-    public function getOne($actionId, SerializerInterface $serializer) {
-        $serializationContext = SerializationContext::create();
-
-        $action = $this->getDoctrine()->getRepository(Action::class)->findOneBy(['id' => $actionId]);
+    public function getActionAction(string $actionId)
+    {
+        $action = $this->getDoctrine()->getRepository(Action::class)->find($actionId);
 
         if ($action == null) {
-            $data = array('code' => Response::HTTP_OK, 'message' => 'No action for this id, id is wrong or action is not existing !');
-            return new JsonResponse($data, Response::HTTP_UNAUTHORIZED);
+            return $this->resError(Response::HTTP_BAD_REQUEST, 'Action not found');
         }
 
-        return new Response($serializer->serialize($action, 'json', $serializationContext->setGroups(['action_list'])), Response::HTTP_OK);
+        return $this->resSuccess($action, ['action_item']);
     }
 
     /**
-     *
-     * @Rest\Post("actions/")
-     *
      * @SWG\Response(
      *     response=200,
      *     description="Create one specified action."
@@ -129,162 +101,42 @@ class ActionController extends Controller {
      *     )
      * )
      *
-     * @SWG\Tag(name="Actions")
+     * @SWG\Tag(name="Action")
      *
-     * @deprecated
+     * @ParamConverter("action", converter="fos_rest.request_body")
+     *
+     * @param Action $action
+     * @param ConstraintViolationListInterface $violations
+     * @return JsonResponse
      */
-    public function createOneForTeacher(Request $request, SerializerInterface $serializer, ValidatorInterface $validator, EncoderFactoryInterface $encoderFactory) {
-        $data = array('code' => Response::HTTP_OK, 'message' => 'This route is not available for this moment.');
-        return new JsonResponse($data, Response::HTTP_OK);
-    }
+    public function postActionAction(Action $action, ConstraintViolationListInterface $violations)
+    {
+        /** @var EncoderFactoryInterface $encoderFactory */
+        $encoderFactory = $this->container->get('security.encoder_factory');
 
-    /**
-     *
-     * @Rest\Put("actions/{actionId}")
-     *
-     * @SWG\Response(
-     *     response=200,
-     *     description="Create one specified action."
-     * ),
-     *
-     * @SWG\Parameter(
-     *     name="X-AUTH-TOKEN",
-     *     in="header",
-     *     required=true,
-     *     type="string",
-     *     default="43fd8a51ae2758bb8176bff0c16",
-     *     description="X-AUTH-TOKEN (api token authorization)"
-     * )
-     *
-     * @SWG\Parameter(
-     *     name="body",
-     *     in="body",
-     *     description="JSON Payload for create a action.",
-     *     required=true,
-     *     format="application/json",
-     *     @SWG\Schema(
-     *          @SWG\Property(property="label", type="string"),
-     *          @SWG\Property(property="score", type="string"),
-     *          @SWG\Property(property="type", type="action or action_custom"),
-     *     )
-     * )
-     *
-     * @SWG\Tag(name="Actions")
-     *
-     * @deprecated
-     */
-    public function modifyOneForTeacher($action, Request $request, SerializerInterface $serializer, ValidatorInterface $validator, EncoderFactoryInterface $encoderFactory) {
-        $data = array('code' => Response::HTTP_OK, 'message' => 'This route is not available for this moment.');
-        return new JsonResponse($data, Response::HTTP_OK);
-    }
-
-    /**
-     *
-     * @Rest\Post("admin/actions/")
-     *
-     * @SWG\Response(
-     *     response=200,
-     *     description="Create one specified action."
-     * ),
-     *
-     * @SWG\Parameter(
-     *     name="X-AUTH-TOKEN",
-     *     in="header",
-     *     required=true,
-     *     type="string",
-     *     default="43fd8a51ae2758bb8176bff0c16",
-     *     description="X-AUTH-TOKEN (api token authorization)"
-     * )
-     *
-     * @SWG\Parameter(
-     *     name="body",
-     *     in="body",
-     *     description="JSON Payload for create a action.",
-     *     required=true,
-     *     format="application/json",
-     *     @SWG\Schema(
-     *          @SWG\Property(property="label", type="string"),
-     *          @SWG\Property(property="score", type="string"),
-     *          @SWG\Property(property="type", type="action or action_custom"),
-     *     )
-     * )
-     *
-     * @SWG\Tag(name="Admin")
-     *
-     */
-    public function createOneForAdmin(Request $request, SerializerInterface $serializer, ValidatorInterface $validator, EncoderFactoryInterface $encoderFactory) {
-        $serializationContext = DeserializationContext::create();
-        $actionType = $request->get('type');
-
-        if($actionType  == "action") {
-            $action = $serializer->deserialize($request->getContent(), Action::class, 'json', $serializationContext->setGroups(['parent_list']));
-            $constraintValidator = $validator->validate($action);
+        $creator = $this->getMe();
+        if ($creator instanceof UserTeacher) {
+            $action->setType(Action::TYPE_USER);
+        } else if (in_array('ROLE_ADMIN', $creator->getRoles())) {
+            $action->setType(Action::TYPE_ADMIN);
         } else {
-            $action = $serializer->deserialize($request->getContent(), ActionCustom::class, 'json', $serializationContext->setGroups(['parent_list']));
-            $constraintValidator = $validator->validate($action);
+            return $this->resError(Response::HTTP_UNAUTHORIZED, 'You are not a teacher or admin user');
         }
 
-        if($constraintValidator->count() == 0) {
-            $em = $this->getDoctrine()->getManager();
-
-            //$action->type = "action";
-            //$action->setCreator($user)
-
-
-            $em->persist($action);
-            $em->flush();
-
-            $data = array('code' => Response::HTTP_OK, 'message' => 'Action are created.');
-            return new JsonResponse($data, Response::HTTP_OK);
-        } else {
-            return new JsonResponse($serializer->serialize($constraintValidator, 'json'), Response::HTTP_BAD_REQUEST);
+        if (count($violations) > 0) {
+            return $this->resError(Response::HTTP_BAD_REQUEST, $violations);
         }
+
+        $action->setCreator($creator);
+
+        $em = $this->getDoctrine()->getManager();
+        $em->persist($action);
+        $em->flush();
+
+        return $this->resSuccess($action, ['action_item'], Response::HTTP_CREATED);
     }
 
     /**
-     *
-     * @Rest\Put("admin/actions/{actionId}")
-     *
-     * @SWG\Response(
-     *     response=200,
-     *     description="Create one specified action."
-     * ),
-     *
-     * @SWG\Parameter(
-     *     name="X-AUTH-TOKEN",
-     *     in="header",
-     *     required=true,
-     *     type="string",
-     *     default="43fd8a51ae2758bb8176bff0c16",
-     *     description="X-AUTH-TOKEN (api token authorization)"
-     * )
-     *
-     * @SWG\Parameter(
-     *     name="body",
-     *     in="body",
-     *     description="JSON Payload for create a action.",
-     *     required=true,
-     *     format="application/json",
-     *     @SWG\Schema(
-     *          @SWG\Property(property="label", type="string"),
-     *          @SWG\Property(property="score", type="string"),
-     *          @SWG\Property(property="type", type="action or action_custom"),
-     *     )
-     * )
-     *
-     * @SWG\Tag(name="Admin")
-     *
-     * @deprecated
-     */
-    public function modifyOneForAdmin($actionId,  Request $request, SerializerInterface $serializer, ValidatorInterface $validator, EncoderFactoryInterface $encoderFactory) {
-        $data = array('code' => Response::HTTP_OK, 'message' => 'This route is not available for this moment.');
-        return new JsonResponse($data, Response::HTTP_OK);
-    }
-
-    /**
-     *
-     * @Rest\Delete("admin/actions/{actionId}")
-     *
      * @SWG\Response(
      *     response=200,
      *     description="Delete the specified action level."
@@ -299,22 +151,28 @@ class ActionController extends Controller {
      *     description="X-AUTH-TOKEN (api token authorization)"
      * )
      *
-     * @SWG\Tag(name="Admin")
+     * @SWG\Tag(name="Action")
      *
+     * @param string $actionId
+     * @return JsonResponse
      */
-    public function deleteOne($actionId) {
-        $actionToRemove = $this->getDoctrine()->getRepository(Action::class)->findOneBy(['id' => $actionId]);
+    public function deleteActionAction(string $actionId)
+    {
+        /** @var Action $action */
+        $action = $this->getDoctrine()->getRepository(Action::class)->find($actionId);
 
-        if ($actionToRemove == null) {
-            $data = array('code' => Response::HTTP_UNAUTHORIZED, 'message' => 'Action are not found, wrong id or already delete.');
-            return new JsonResponse($data, Response::HTTP_UNAUTHORIZED);
+        if ($action == null) {
+            return $this->resError(Response::HTTP_BAD_REQUEST, 'Action are not found, wrong id or already delete.');
         }
 
-        $this->getDoctrine()->getManager()->remove($actionToRemove);
+        if ($this->getMe()->getId() != $action->getCreator()->getId() && $action->getType() == Action::TYPE_USER) {
+            return $this->resError(Response::HTTP_UNAUTHORIZED, 'You are not the creator of the action');
+        }
+
+        $this->getDoctrine()->getManager()->remove($action);
         $this->getDoctrine()->getManager()->flush();
 
-        $data = array('code' => Response::HTTP_OK, 'message' => 'Action are removed.');
-        return new JsonResponse($data, Response::HTTP_OK);
+        return $this->resSuccess('', [], Response::HTTP_OK, 'Action are removed.');
     }
 
 }

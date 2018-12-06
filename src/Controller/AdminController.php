@@ -2,37 +2,22 @@
 
 namespace App\Controller;
 
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-
-use Symfony\Component\Routing\Annotation\Route;
-
+use App\Entity\Action;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-
-use Symfony\Component\Security\Core\Encoder\EncoderFactoryInterface;
-use Symfony\Component\Validator\Validator\ValidatorInterface;
-
-use JMS\Serializer\SerializerInterface;
-use JMS\Serializer\SerializationContext;
-use JMS\Serializer\DeserializationContext;
-
-use FOS\RestBundle\Controller\Annotations as Rest;
-
-use Nelmio\ApiDocBundle\Annotation\Model;
+use Symfony\Component\Validator\ConstraintViolationListInterface;
 use Swagger\Annotations as SWG;
-
 use App\Entity\User;
 
 /**
- * @Route("/api/admin", name="api_admin")
+ * Class AdminController
+ * @package App\Controller
  */
-class AdminController extends Controller {
+class AdminController extends AbstractController
+{
 
     /**
-     *
-     * @Rest\Get("/users")
-     *
      * @SWG\Response(
      *     response=200,
      *     description="Return all users."
@@ -50,23 +35,14 @@ class AdminController extends Controller {
      * @SWG\Tag(name="Admin")
      *
      */
-    public function getUsers(Request $request, SerializerInterface $serializer) {
-        $serializationContext = SerializationContext::create();
-        $apiToken = $request->headers->get('X-AUTH-TOKEN');
+    public function getAdminUsersAction()
+    {
+        $users = $this->getDoctrine()->getRepository(User::class)->findAll();
 
-        if ($apiToken == null) {
-            $data = array('code' => Response::HTTP_UNAUTHORIZED, 'message' => 'Missing arguments (see documentation)');
-            return new JsonResponse($data, Response::HTTP_UNAUTHORIZED);
-        }
-
-        $user = $this->getDoctrine()->getRepository(User::class)->findAll();
-        return new Response($serializer->serialize($user, 'json', $serializationContext->setGroups(['user_create', 'user_admin'])), Response::HTTP_OK);
+        return $this->resError($users, ['user_create', 'user_admin']);
     }
 
     /**
-     *
-     * @Rest\Put("/users/add/{userId}")
-     *
      * @SWG\Response(
      *     response=200,
      *     description="Add specified user to admin users."
@@ -84,8 +60,11 @@ class AdminController extends Controller {
      * @SWG\Tag(name="Admin")
      *
      * @deprecated
+     * @param string $userId
+     * @return JsonResponse
      */
-    public function addUserAdmin($userId) {
+    public function putAdminAction(string $userId)
+    {
         $data = array('code' => Response::HTTP_OK, 'message' => 'This route is not available for this moment.');
         return new JsonResponse($data, Response::HTTP_OK);
 
@@ -106,9 +85,6 @@ class AdminController extends Controller {
     }
 
     /**
-     *
-     * @Rest\Delete("/users")
-     *
      * @SWG\Response(
      *     response=200,
      *     description="Remove authenticated admin user to admin users."
@@ -125,18 +101,21 @@ class AdminController extends Controller {
      *
      * @SWG\Tag(name="Admin")
      *
+     * @param string $userId
+     * @return JsonResponse
      */
-    public function removeUserAdmin(Request $request) {
-        $apiToken = $request->headers->get('X-AUTH-TOKEN');
-        $user = $this->getDoctrine()->getRepository(User::class)->findOneBy(['apiToken' => $apiToken]);
+    public function deleteAdminAction(string $userId)
+    {
+        $user = $this->getMe();
+
+        if ($user->getId() !== $userId) {
+            return $this->resError(Response::HTTP_UNAUTHORIZED, 'You are not this user');
+        }
 
         $user->setBasicRole();
         $user->update($user);
         $this->getDoctrine()->getManager()->flush();
 
-        $data = array('code' => Response::HTTP_OK, 'message' => 'User role are updated to "ROLE_USER".');
-        return new JsonResponse($data, Response::HTTP_OK);
+        return $this->resSuccess('', [], Response::HTTP_OK, 'User role are updated to "ROLE_USER".');
     }
-
-
 }
