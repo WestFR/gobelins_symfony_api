@@ -203,20 +203,35 @@ class Children
         }
     }
 
-    public function getScore(): ?Score
+    /**
+     * @JMS\Expose()
+     * @JMS\Groups({"children_item", "parent_list"})
+     * @JMS\VirtualProperty
+     * @JMS\SerializedName("score")
+     *
+     * @return Int
+     */
+    public function getScore(): Int
     {
-        return $this->score;
+        $scores = array_map(function ($action) {
+            /** @var Action $action */
+            return $action->getScore();
+        }, $this->actions->toArray());
+        return array_reduce($scores, function ($item, $total) {
+            return $total += $item;
+        }, 0);
     }
 
-    public function setScore(Score $score): self
+    /**
+     * @JMS\Expose()
+     * @JMS\Groups({"children_item", "parent_list"})
+     * @JMS\VirtualProperty
+     * @JMS\SerializedName("level")
+     *
+     * @return Int
+     */
+    public function getLevel(): Int
     {
-        $this->score = $score;
-
-        // set the owning side of the relation if necessary
-        if ($this !== $score->getChildren()) {
-            $score->setChildren($this);
-        }
-
-        return $this;
+        return ($score = $this->getScore()) <= 0 ? 0 : sqrt($score);
     }
 }

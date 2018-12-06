@@ -2,10 +2,14 @@
 
 namespace App\Controller;
 
+use AnotherNamespace\Child;
 use App\Entity\Action;
 use App\Entity\Children;
+use App\Services\ScoreMailer\ScoreMailerService;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Component\HttpFoundation\Response;
 use Swagger\Annotations as SWG;
+use Symfony\Component\Validator\ConstraintViolationListInterface;
 
 /**
  * Class ChildrenController
@@ -52,8 +56,6 @@ class ChildrenController extends AbstractController
             return $this->resError(Response::HTTP_BAD_REQUEST, sprintf('Children %s not found', $childrenId));
         }
 
-        dd($this->getDoctrine()->getRepository(Action::class)->getScoreByChildren($childrenId));
-
         return $this->resSuccess($children, ['children_item', 'level_item', 'parent_item', 'actions_list']);
     }
 
@@ -78,5 +80,51 @@ class ChildrenController extends AbstractController
         }
 
         return $this->resSuccess($children->getActions(), ['actions_list']);
+    }
+
+    /**
+     * @SWG\Tag(name="Children")
+     *
+     * @SWG\Response(
+     *     response=200,
+     *     description="Return actions list for children."
+     * )
+     *
+     * @ParamConverter("action", converter="fos_rest.request_body")
+     *
+     * @param string $childrenId
+     * @param Action $action
+     * @param ConstraintViolationListInterface $violations
+     * @return \Symfony\Component\HttpFoundation\JsonResponse
+     */
+    public function postChildrenActionAction(string $childrenId, Action $action, ConstraintViolationListInterface $violations)
+    {
+        /** @var ScoreMailerService $scoreMailer */
+        $scoreMailer = $this->container->get('mailer.score');
+
+        /** @var Children $children */
+        $children = $this->getDoctrine()->getRepository(Children::class)->find($childrenId);
+        if (is_null($children)) {
+            return $this->resError(Response::HTTP_BAD_REQUEST, 'Children not found');
+        }
+
+        $teacher = $children->getSchoolClass()->getTeacher();
+        if ($this->getMe()->getId() !== $teacher->getId()) {
+            return $this->resError(Response::HTTP_UNAUTHORIZED, 'You are not the teacher of the children');
+        }
+
+        if (count($violations) > 0) {
+            return $this->resError(Response::HTTP_BAD_REQUEST, $violations);
+        }
+
+        $scoreMailer->setChildrenBeforeUpdate($children);
+        $children->addAction($action);
+        $scoreMailer->setChildrenAfterUpdate($children);
+        $scoreMailer->checkScore();
+
+        $this->getDoctrine()->getManager()->persist($children);
+        $this->getDoctrine()->getManager()->flush();
+
+        return $this->resSuccess($children);
     }
 }
