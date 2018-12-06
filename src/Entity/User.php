@@ -102,6 +102,21 @@ class User implements UserInterface
     private $phone;
 
     /**
+     * @JMS\Expose()
+     * @JMS\Groups({"user_create", "children_item", "parent_list"})
+     * @JMS\VirtualProperty
+     * @JMS\SerializedName("type")
+     *
+     * @return String
+     */
+    public function getType(): String
+    {
+        if ($this instanceof UserTeacher) return 'teacher';
+        else if ($this instanceof UserParent) return 'parent';
+        else if ($this instanceof User) return 'user';
+    }
+
+    /**
      * @ORM\Column(type="json_array")
      *
      * @Assert\NotBlank(groups={"user_create"})

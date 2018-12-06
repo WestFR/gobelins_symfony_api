@@ -21,7 +21,7 @@ class Children
      * @ORM\Column(type="guid")
      *
      * @JMS\Expose()
-     * @JMS\Groups({"children_list", "parent_list", "class_item"})
+     * @JMS\Groups({"user_create", "children_list", "parent_list", "class_item"})
      */
     private $id;
 
@@ -30,7 +30,7 @@ class Children
      * @Assert\NotBlank()
      *
      * @JMS\Expose()
-     * @JMS\Groups({"children_list", "children_item", "children_create", "parent_list", "class_item"})
+     * @JMS\Groups({"user_create", "children_list", "children_item", "children_create", "parent_list", "class_item"})
      */
     private $firstname;
 
@@ -39,7 +39,7 @@ class Children
      * @Assert\NotBlank()
      *
      * @JMS\Expose()
-     * @JMS\Groups({"children_list", "children_item", "children_create", "parent_list", "class_item"})
+     * @JMS\Groups({"user_create", "children_list", "children_item", "children_create", "parent_list", "class_item"})
      */
     private $lastname;
 

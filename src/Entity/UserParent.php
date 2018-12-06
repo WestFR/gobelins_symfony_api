@@ -20,7 +20,7 @@ class UserParent extends User
      * @ORM\OneToMany(targetEntity="App\Entity\Children", mappedBy="parent", orphanRemoval=true)
      *
      * @JMS\Expose
-     * @JMS\Groups({"parent_list"})
+     * @JMS\Groups({"user_create", "parent_list"})
      */
     private $childrens;
 

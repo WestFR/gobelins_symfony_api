@@ -18,7 +18,7 @@ class UserTeacher extends User
      * @ORM\OneToMany(targetEntity="App\Entity\SchoolClass", mappedBy="teacher")
      *
      * @JMS\Expose()
-     * @JMS\Groups({"teacher_item"})
+     * @JMS\Groups({"user_create", "teacher_item"})
      */
     private $schoolClasses;
 
