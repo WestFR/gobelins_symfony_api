@@ -14,21 +14,21 @@ use JMS\Serializer\Annotation as JMS;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\ActionRepository")
- * @InheritanceType("SINGLE_TABLE")
- * @DiscriminatorColumn(name="type", type="string")
- * @DiscriminatorMap({"action_custom" = "ActionCustom", "action" = "Action"})
  *
  * @JMS\ExclusionPolicy("all")
  */
 class Action
 {
+    const TYPE_USER = 'user';
+    const TYPE_ADMIN = 'admin';
+
     /**
      * @ORM\Id()
      * @ORM\GeneratedValue(strategy="UUID")
      * @ORM\Column(type="guid")
      *
      * @JMS\Expose
-     * @JMS\Groups({"action_list"})
+     * @JMS\Groups({"children_item", "action_list"})
      */
     private $id;
 
@@ -37,7 +37,7 @@ class Action
      * @Assert\NotBlank()
      *
      * @JMS\Expose
-     * @JMS\Groups({"action_list",  "parent_list"})
+     * @JMS\Groups({"children_item", "action_list",  "parent_list"})
      */
     private $label;
 
@@ -46,7 +46,7 @@ class Action
      * @Assert\NotBlank()
      *
      * @JMS\Expose
-     * @JMS\Groups({"action_list",  "parent_list"})
+     * @JMS\Groups({"children_item", "action_list",  "parent_list"})
      */
     private $score;
 
@@ -54,6 +54,20 @@ class Action
      * @ORM\ManyToMany(targetEntity="App\Entity\Children", mappedBy="actions")
      */
     private $childrens;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="User", inversedBy="actions")
+     * @ORM\JoinColumn(nullable=false)
+     *
+     * @JMS\Expose
+     * @JMS\Groups({"action_item"})
+     */
+    private $creator;
+
+    /**
+     * @ORM\Column(type="string", length=255, columnDefinition="ENUM('user', 'admin')")
+     */
+    private $type;
 
     public function __construct()
     {
@@ -113,6 +127,30 @@ class Action
             $this->childrens->removeElement($children);
             $children->removeAction($this);
         }
+
+        return $this;
+    }
+
+    public function getCreator(): ?User
+    {
+        return $this->creator;
+    }
+
+    public function setCreator(?User $creator): self
+    {
+        $this->creator = $creator;
+
+        return $this;
+    }
+
+    public function getType(): ?string
+    {
+        return $this->type;
+    }
+
+    public function setType(string $type): self
+    {
+        $this->type = $type;
 
         return $this;
     }

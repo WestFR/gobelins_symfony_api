@@ -21,7 +21,7 @@ class SchoolClass
      * @ORM\Column(type="guid")
      *
      * @JMS\Expose()
-     * @JMS\Groups({"class_item"})
+     * @JMS\Groups({"level_item", "class_item"})
      *
      * @SWG\Property(description="Unique uuid of the class.")
      */
@@ -32,7 +32,7 @@ class SchoolClass
      * @Assert\NotBlank()
      *
      * @JMS\Expose()
-     * @JMS\Groups({"parent_list", "class_item"})
+     * @JMS\Groups({"level_item", "parent_list", "class_item"})
      *
      * @SWG\Property(description="Start year value.")
      */
@@ -43,7 +43,7 @@ class SchoolClass
      * @Assert\NotBlank()
      *
      * @JMS\Expose()
-     * @JMS\Groups({"parent_list", "class_item"})
+     * @JMS\Groups({"level_item", "parent_list", "class_item"})
      *
      * @SWG\Property(description="End year value")
      */

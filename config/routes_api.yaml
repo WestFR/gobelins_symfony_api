@@ -17,3 +17,15 @@ teacher:
 actions:
     type: rest
     resource: App\Controller\ActionController
+
+schoolLevels:
+    type: rest
+    resource: App\Controller\SchoolLevelController
+
+users:
+    type: rest
+    resource: App\Controller\UserController
+
+admin:
+    type: rest
+    resource: App\Controller\AdminController

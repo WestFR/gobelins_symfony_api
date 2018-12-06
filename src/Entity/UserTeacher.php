@@ -23,15 +23,12 @@ class UserTeacher extends User
     private $schoolClasses;
 
     /**
-     * @ORM\OneToMany(targetEntity="App\Entity\ActionCustom", mappedBy="creator")
-     * @JMS\Groups({"teacher_item"})
+     * UserTeacher constructor.
      */
-    private $actionCustoms;
-
     public function __construct()
     {
+        parent::__construct();
         $this->schoolClasses = new ArrayCollection();
-        $this->actionCustoms = new ArrayCollection();
     }
 
     /**
@@ -59,37 +56,6 @@ class UserTeacher extends User
             // set the owning side to null (unless already changed)
             if ($schoolClass->getTeacher() === $this) {
                 $schoolClass->setTeacher(null);
-            }
-        }
-
-        return $this;
-    }
-
-    /**
-     * @return Collection|ActionCustom[]
-     */
-    public function getActionCustoms(): Collection
-    {
-        return $this->actionCustoms;
-    }
-
-    public function addActionCustom(ActionCustom $ActionCustom): self
-    {
-        if (!$this->actionCustoms->contains($ActionCustom)) {
-            $this->actionCustoms[] = $ActionCustom;
-            $ActionCustom->setCreator($this);
-        }
-
-        return $this;
-    }
-
-    public function removeActionCustom(ActionCustom $ActionCustom): self
-    {
-        if ($this->actionCustoms->contains($ActionCustom)) {
-            $this->actionCustoms->removeElement($ActionCustom);
-            // set the owning side to null (unless already changed)
-            if ($ActionCustom->getCreator() === $this) {
-                $ActionCustom->setCreator(null);
             }
         }
 

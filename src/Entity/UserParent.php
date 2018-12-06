@@ -22,11 +22,14 @@ class UserParent extends User
      * @JMS\Expose
      * @JMS\Groups({"parent_list"})
      */
-
     private $childrens;
 
+    /**
+     * UserParent constructor.
+     */
     public function __construct()
     {
+        parent::__construct();
         $this->childrens = new ArrayCollection();
     }
 
@@ -38,7 +41,8 @@ class UserParent extends User
         return $this->childrens;
     }
 
-    public function getSpecificChildren(string $id) {
+    public function getChildren(string $id)
+    {
         foreach ($this->childrens as $item) {
             if ($item->getId() == $id) {
                 return $item;

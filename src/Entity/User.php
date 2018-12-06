@@ -8,6 +8,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\DiscriminatorColumn;
 use Doctrine\ORM\Mapping\DiscriminatorMap;
 use Doctrine\ORM\Mapping\InheritanceType;
+use Doctrine\Common\Collections\Collection;
 
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
@@ -18,13 +19,13 @@ use Swagger\Annotations as SWG;
  * @ORM\Entity(repositoryClass="App\Repository\UserRepository")
  * @InheritanceType("SINGLE_TABLE")
  * @DiscriminatorColumn(name="type", type="string")
- * @DiscriminatorMap({"parent" = "UserParent", "teacher" = "UserTeacher"})
+ * @DiscriminatorMap({"parent" = "UserParent", "teacher" = "UserTeacher", "user" = "User"})
  *
  * @UniqueEntity(fields={"mail"}, message="This specified email {{ value }} already exists", groups={"user_create"})
  *
  * @JMS\ExclusionPolicy("all")
  */
-abstract class User implements UserInterface
+class User implements UserInterface
 {
     /**
      * @ORM\Id()
@@ -128,7 +129,7 @@ abstract class User implements UserInterface
      * @JMS\Expose
      * @JMS\Groups({"user_list", "user_item", "user_admin"})
      *
-     * @SWG\Property(description="Created date-time.")
+     * @SWG\Property(description=" date-time.")
      */
     private $createdAt;
 
@@ -142,6 +143,19 @@ abstract class User implements UserInterface
      */
     private $updatedAt;
 
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\Action", mappedBy="creator")
+     * @JMS\Groups({"teacher_item", "admin_item"})
+     */
+    private $actions;
+
+    /**
+     * User constructor.
+     */
+    public function __construct()
+    {
+        $this->actions = new ArrayCollection();
+    }
 
     public function getId(): ?string
     {
@@ -350,5 +364,36 @@ abstract class User implements UserInterface
         if($user->getUpdatedAt() != null) {
             $this->updatedAt = $user->getUpdatedAt();
         }
+    }
+
+    /**
+     * @return Collection|Action[]
+     */
+    public function getActions(): Collection
+    {
+        return $this->actions;
+    }
+
+    public function addAction(Action $Action): self
+    {
+        if (!$this->actions->contains($Action)) {
+            $this->actions[] = $Action;
+            $Action->setCreator($this);
+        }
+
+        return $this;
+    }
+
+    public function removeAction(Action $Action): self
+    {
+        if ($this->actions->contains($Action)) {
+            $this->actions->removeElement($Action);
+            // set the owning side to null (unless already changed)
+            if ($Action->getCreator() === $this) {
+                $Action->setCreator(null);
+            }
+        }
+
+        return $this;
     }
 }

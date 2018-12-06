@@ -21,7 +21,7 @@ class Children
      * @ORM\Column(type="guid")
      *
      * @JMS\Expose()
-     * @JMS\Groups({"parent_list", "class_item"})
+     * @JMS\Groups({"children_list", "parent_list", "class_item"})
      */
     private $id;
 
@@ -30,7 +30,7 @@ class Children
      * @Assert\NotBlank()
      *
      * @JMS\Expose()
-     * @JMS\Groups({"children_create", "parent_list", "class_item"})
+     * @JMS\Groups({"children_list", "children_item", "children_create", "parent_list", "class_item"})
      */
     private $firstname;
 
@@ -39,7 +39,7 @@ class Children
      * @Assert\NotBlank()
      *
      * @JMS\Expose()
-     * @JMS\Groups({"children_create", "parent_list", "class_item"})
+     * @JMS\Groups({"children_list", "children_item", "children_create", "parent_list", "class_item"})
      */
     private $lastname;
 
@@ -48,7 +48,7 @@ class Children
      * @Assert\NotBlank()
      *
      * @JMS\Expose()
-     * @JMS\Groups({"children_create", "parent_list", "class_item"})
+     * @JMS\Groups({"children_list", "children_item", "children_create", "parent_list", "class_item"})
      */
     private $bornedAt;
 
@@ -58,6 +58,7 @@ class Children
      * @ORM\JoinColumn(nullable=false)
      *
      * @JMS\Expose()
+     * @JMS\Groups({"children_item"})
      */
     private $parent;
 
@@ -65,15 +66,14 @@ class Children
      * @ORM\ManyToOne(targetEntity="App\Entity\SchoolClass", inversedBy="childrens")
      *
      * @JMS\Expose()
-     * @JMS\Groups({"children_create", "parent_list"})
+     * @JMS\Groups({"children_list", "children_item", "children_create", "parent_list"})
      */
     private $schoolClass;
 
     /**
      * @ORM\ManyToMany(targetEntity="App\Entity\Action", inversedBy="childrens")
-     *
      * @JMS\Expose()
-     * @JMS\Groups({"parent_list"})
+     * @JMS\Groups({"children_item"})
      */
     private $actions;
 
@@ -201,5 +201,22 @@ class Children
         if($children->getActions() != null) {
             $this->actions = $children->getActions();
         }
+    }
+
+    public function getScore(): ?Score
+    {
+        return $this->score;
+    }
+
+    public function setScore(Score $score): self
+    {
+        $this->score = $score;
+
+        // set the owning side of the relation if necessary
+        if ($this !== $score->getChildren()) {
+            $score->setChildren($this);
+        }
+
+        return $this;
     }
 }
