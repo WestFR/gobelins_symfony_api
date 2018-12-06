@@ -7,7 +7,7 @@ use App\DataFixtures\Factories\ChildrenFixtureFactory;
 use App\DataFixtures\Factories\ParentFixtureFactory;
 use App\DataFixtures\Factories\SchoolClassFixtureFactory;
 use App\DataFixtures\Factories\TeacherFixtureFactory;
-use App\Entity\ActionCustom;
+use App\Entity\Action;
 use App\Entity\Children;
 use App\Entity\SchoolClass;
 use App\Entity\SchoolLevel;
@@ -71,10 +71,14 @@ class AppFixtures extends Fixture
                         /** @var Children $children */
                         $children->setParent(ParentFixtureFactory::buildItem($manager));
                         $children->setSchoolClass($schoolClass);
-                        $children->addAction(ActionFixtureFactory::buildItem($manager, function ($action) use ($teacher) {
-                            /** @var ActionCustom $action */
-                            $action->setCreator($teacher);
-                        }));
+
+                        for ($i = 0; $i < 10; $i++) {
+                            $children->addAction(ActionFixtureFactory::buildItem($manager, function ($action) use ($teacher) {
+                                /** @var Action $action */
+                                $action->setType(Action::TYPE_USER);
+                                $action->setCreator($teacher);
+                            }));
+                        }
 
                     }
                 );

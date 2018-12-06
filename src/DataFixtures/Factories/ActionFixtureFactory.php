@@ -2,7 +2,7 @@
 
 namespace App\DataFixtures\Factories;
 
-use App\Entity\ActionCustom;
+use App\Entity\Action;
 use Faker\Generator;
 
 /**
@@ -14,11 +14,11 @@ class ActionFixtureFactory extends FixtureFactory
 
     /**
      * @param Generator $generator
-     * @return ActionCustom
+     * @return Action
      */
     public static function build(Generator $generator)
     {
-        $action = new ActionCustom();
+        $action = new Action();
         $action->setLabel($generator->sentence());
         $action->setScore($generator->numberBetween(-5, 5));
         return $action;
