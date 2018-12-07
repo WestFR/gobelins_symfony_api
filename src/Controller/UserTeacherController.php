@@ -16,6 +16,16 @@ class UserTeacherController extends AbstractController
 {
     /**
      * @SWG\Tag(name="Teacher")
+     *
+     * @SWG\Parameter(
+     *     name="X-AUTH-TOKEN",
+     *     in="header",
+     *     required=true,
+     *     type="string",
+     *     default="43fd8a51ae2758bb8176bff0c16",
+     *     description="X-AUTH-TOKEN (api token authorization)"
+     * )
+     *
      * @SWG\Response(
      *     response="200",
      *     description="Return a collection of teachers",
@@ -36,6 +46,16 @@ class UserTeacherController extends AbstractController
 
     /**
      * @SWG\Tag(name="Teacher")
+     *
+     * @SWG\Parameter(
+     *     name="X-AUTH-TOKEN",
+     *     in="header",
+     *     required=true,
+     *     type="string",
+     *     default="43fd8a51ae2758bb8176bff0c16",
+     *     description="X-AUTH-TOKEN (api token authorization)"
+     * )
+     *
      * @SWG\Response(
      *     response="200",
      *     description="Return a teacher item",
@@ -58,7 +78,14 @@ class UserTeacherController extends AbstractController
     /**
      * @SWG\Tag(name="Teacher")
      *
-     * @ParamConverter("class", converter="fos_rest.request_body")
+     * @SWG\Parameter(
+     *     name="X-AUTH-TOKEN",
+     *     in="header",
+     *     required=true,
+     *     type="string",
+     *     default="43fd8a51ae2758bb8176bff0c16",
+     *     description="X-AUTH-TOKEN (api token authorization)"
+     * )
      *
      * @SWG\Response(
      *     response="201",
@@ -68,6 +95,8 @@ class UserTeacherController extends AbstractController
      *          ref=@Model(type=UserTeacher::class, groups={"user_item", "teacher_item"})
      *     )
      * )
+     *
+     * @ParamConverter("class", converter="fos_rest.request_body")
      *
      * @param int $teacherId
      * @param SchoolClass $class
@@ -93,6 +122,15 @@ class UserTeacherController extends AbstractController
 
     /**
      * @SWG\Tag(name="Teacher")
+     *
+     * @SWG\Parameter(
+     *     name="X-AUTH-TOKEN",
+     *     in="header",
+     *     required=true,
+     *     type="string",
+     *     default="43fd8a51ae2758bb8176bff0c16",
+     *     description="X-AUTH-TOKEN (api token authorization)"
+     * )
      *
      * @SWG\Response(
      *     response="200",
@@ -172,6 +210,8 @@ class UserTeacherController extends AbstractController
     }
 
     /**
+     * @SWG\Tag(name="Teacher")
+     *
      * @SWG\Response(
      *     response=200,
      *     description="Create one specified action."
@@ -198,8 +238,6 @@ class UserTeacherController extends AbstractController
      *          @SWG\Property(property="type", type="action or action_custom"),
      *     )
      * )
-     *
-     * @SWG\Tag(name="Teacher")
      *
      * @ParamConverter("action", converter="fos_rest.request_body")
      *

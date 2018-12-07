@@ -18,6 +18,15 @@ class SchoolClassController extends AbstractController
     /**
      * @SWG\Tag(name="Class")
      *
+     * @SWG\Parameter(
+     *     name="X-AUTH-TOKEN",
+     *     in="header",
+     *     required=true,
+     *     type="string",
+     *     default="43fd8a51ae2758bb8176bff0c16",
+     *     description="X-AUTH-TOKEN (api token authorization)"
+     * )
+     *
      * @SWG\Response(
      *     response=200,
      *     description="Return classes list."
@@ -35,6 +44,15 @@ class SchoolClassController extends AbstractController
     /**
      * @SWG\Tag(name="Class")
      *
+     * @SWG\Parameter(
+     *     name="X-AUTH-TOKEN",
+     *     in="header",
+     *     required=true,
+     *     type="string",
+     *     default="43fd8a51ae2758bb8176bff0c16",
+     *     description="X-AUTH-TOKEN (api token authorization)"
+     * )
+     *
      * @SWG\Response(
      *     response=200,
      *     description="Return class item."
@@ -46,11 +64,25 @@ class SchoolClassController extends AbstractController
     public function getClassAction(string $classId)
     {
         $class = $this->getDoctrine()->getRepository(SchoolClass::class)->find($classId);
+        
+        if (is_null($class)) {
+            return $this->resError(Response::HTTP_BAD_REQUEST, 'Children not found');
+        }
+
         return $this->resSuccess($class, ['class_item']);
     }
 
     /**
      * @SWG\Tag(name="Class")
+     *
+     * @SWG\Parameter(
+     *     name="X-AUTH-TOKEN",
+     *     in="header",
+     *     required=true,
+     *     type="string",
+     *     default="43fd8a51ae2758bb8176bff0c16",
+     *     description="X-AUTH-TOKEN (api token authorization)"
+     * )
      *
      * @SWG\Response(
      *     response=201,
@@ -64,15 +96,19 @@ class SchoolClassController extends AbstractController
      * @param ConstraintViolationListInterface $violations
      * @return \Symfony\Component\HttpFoundation\JsonResponse
      */
-    public function postClassChildrenAction(
-        int $classId,
-        Children $children,
-        ConstraintViolationListInterface $violations
-    ) {
-        if (count($violations) > 0) return $this->resSuccess($violations, [], Response::HTTP_BAD_REQUEST);
-
+    public function postClassChildrenAction(int $classId, Children $children, ConstraintViolationListInterface $violations)
+    {
         /** @var SchoolClass $class */
         $class = $this->getDoctrine()->getRepository(SchoolClass::class)->find($classId);
+
+        if (count($violations) > 0) {
+            return $this->resSuccess($violations, [], Response::HTTP_BAD_REQUEST);
+        }
+
+        if (is_null($class)) {
+            return $this->resError(Response::HTTP_BAD_REQUEST, 'School class not found');
+        }
+
         $class->addChildren($children);
 
         $this->getDoctrine()->getManager()->persist($class);
@@ -84,6 +120,15 @@ class SchoolClassController extends AbstractController
     /**
      * @SWG\Tag(name="Class")
      *
+     * @SWG\Parameter(
+     *     name="X-AUTH-TOKEN",
+     *     in="header",
+     *     required=true,
+     *     type="string",
+     *     default="43fd8a51ae2758bb8176bff0c16",
+     *     description="X-AUTH-TOKEN (api token authorization)"
+     * )
+     *
      * @SWG\Response(
      *     response=200,
      *     description="Delete children in class."
@@ -91,26 +136,42 @@ class SchoolClassController extends AbstractController
      *
      * @param int $classId
      * @param int $childrenId
+     * @return \Symfony\Component\HttpFoundation\JsonResponse
      */
-    public function deleteClassChildrenAction(
-        int $classId,
-        int $childrenId
-    ) {
+    public function deleteClassChildrenAction(int $classId, int $childrenId)
+    {
         /** @var SchoolClass $class */
         $class = $this->getDoctrine()->getRepository(SchoolClass::class)->find($classId);
         /** @var Children $children */
-        $children = $this->getDoctrine()->getRepository(SchoolClass::class)->find($childrenId);
+        $children = $this->getDoctrine()->getRepository(Children::class)->find($childrenId);
+
+        if (is_null($class)) {
+            return $this->resError(Response::HTTP_BAD_REQUEST, 'School class not found');
+        }
+
+        if (is_null($children)) {
+            return $this->resError(Response::HTTP_BAD_REQUEST, 'Children not found');
+        }
 
         $class->removeChildren($children);
 
         $this->getDoctrine()->getManager()->persist($class);
         $this->getDoctrine()->getManager()->flush();
 
-        $this->resSuccess($class, ['class_item']);
+        return $this->resSuccess($class, ['class_item']);
     }
 
     /**
      * @SWG\Tag(name="Class")
+     *
+     * @SWG\Parameter(
+     *     name="X-AUTH-TOKEN",
+     *     in="header",
+     *     required=true,
+     *     type="string",
+     *     default="43fd8a51ae2758bb8176bff0c16",
+     *     description="X-AUTH-TOKEN (api token authorization)"
+     * )
      *
      * @SWG\Response(
      *     response=200,
@@ -124,6 +185,10 @@ class SchoolClassController extends AbstractController
     {
         /** @var SchoolClass $class */
         $class = $this->getDoctrine()->getRepository(SchoolClass::class)->find($classId);
+
+        if (is_null($class)) {
+            return $this->resError(Response::HTTP_BAD_REQUEST, 'School class not found');
+        }
 
         return $this->resSuccess($class->getChildrens(), ['childrens_list']);
     }

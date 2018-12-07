@@ -1,9 +1,7 @@
-# gobelins_symfony_api - Name Project
+# eSchool API
 
 
-You can visualize the documentation of the api on the following endpoint: `/
-
-
+You can visualize the documentation of the api on the following endpoint: `/`
 ESchool is a platform on which the professors are going to be able to estimate the children of their class on their behavior. <br><br>
 
 It will allow a permanent follow-up for the parents who can connect to the application and visualize the advance of his / his child.
@@ -60,7 +58,7 @@ Follow this instructions to install the application & develop your features !
 
 A simple API is available on this application.
 
-- A documentation is available at : `/`
+- A documentation is available : `http://localhost/`
 - You can use this API directly with this documentation or thanks an external application.
 
 
