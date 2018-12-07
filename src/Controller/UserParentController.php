@@ -83,6 +83,8 @@ class UserParentController extends AbstractController
      *
      * @SWG\Tag(name="Parent")
      *
+     * @deprecated Endpoint moved in children controller
+     *
      * @param $parentId
      * @param $childrenId
      * @return JsonResponse
