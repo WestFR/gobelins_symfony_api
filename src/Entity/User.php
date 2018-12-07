@@ -109,7 +109,7 @@ class User implements UserInterface
      *
      * @return String
      */
-    public function getType(): String
+    public function getUserType(): String
     {
         if ($this instanceof UserTeacher) return 'teacher';
         else if ($this instanceof UserParent) return 'parent';
