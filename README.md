@@ -39,7 +39,7 @@ Follow this instructions to install the application & develop your features !
 
 A simple API is available on this application.
 
-- A documentation is available : `yourProject/api/doc`
+- A documentation is available : `http://localhost/`
 - You can use this API directly with this documentation or thanks an external application.
 
 
