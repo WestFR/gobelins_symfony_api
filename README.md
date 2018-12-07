@@ -1,4 +1,4 @@
-# gobelins_symfony_api - Name Project
+# eSchool API
 
 
 Few description lines for this project..... Coming  soon !
