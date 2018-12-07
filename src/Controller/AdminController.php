@@ -39,7 +39,7 @@ class AdminController extends AbstractController
     {
         $users = $this->getDoctrine()->getRepository(User::class)->findAll();
 
-        return $this->resError($users, ['user_create', 'user_admin']);
+        return $this->resSuccess($users, ['user_create', 'user_admin']);
     }
 
     /**
@@ -65,23 +65,20 @@ class AdminController extends AbstractController
      */
     public function putAdminAction(string $userId)
     {
-        $data = array('code' => Response::HTTP_OK, 'message' => 'This route is not available for this moment.');
-        return new JsonResponse($data, Response::HTTP_OK);
-
-
         $user = $this->getDoctrine()->getRepository(User::class)->find($userId);
 
-        if($user == null) {
-            $data = array('code' => Response::HTTP_UNAUTHORIZED, 'message' => 'User are not found.');
-            return new JsonResponse($data, Response::HTTP_UNAUTHORIZED);
+        if ($user == null) {
+            return $this->resError(Response::HTTP_BAD_REQUEST, 'User not found');
+        }
+        if ($user->getId() != $this->getMe()->getId()) {
+            return $this->resError(Response::HTTP_UNAUTHORIZED, '');
         }
 
         $user->setAdminRole();
         $user->update($user);
         $this->getDoctrine()->getManager()->flush();
 
-        $data = array('code' => Response::HTTP_OK, 'message' => 'User role are updated to "ROLE_ADMIN".');
-        return new JsonResponse($data, Response::HTTP_OK);
+        return $this->resSuccess($user, [], Response::HTTP_OK, 'User role are updated to "ROLE_ADMIN".');
     }
 
     /**

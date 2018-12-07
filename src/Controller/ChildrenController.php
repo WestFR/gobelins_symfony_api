@@ -2,7 +2,6 @@
 
 namespace App\Controller;
 
-use AnotherNamespace\Child;
 use App\Entity\Action;
 use App\Entity\Children;
 use App\Services\ScoreMailer\ScoreMailerService;
@@ -21,6 +20,15 @@ class ChildrenController extends AbstractController
     /**
      * @SWG\Tag(name="Children")
      *
+     * @SWG\Parameter(
+     *     name="X-AUTH-TOKEN",
+     *     in="header",
+     *     required=true,
+     *     type="string",
+     *     default="43fd8a51ae2758bb8176bff0c16",
+     *     description="X-AUTH-TOKEN (api token authorization)"
+     * )
+     *
      * @SWG\Response(
      *     response=200,
      *     description="Return list for children."
@@ -38,6 +46,15 @@ class ChildrenController extends AbstractController
 
     /**
      * @SWG\Tag(name="Children")
+     *
+     * @SWG\Parameter(
+     *     name="X-AUTH-TOKEN",
+     *     in="header",
+     *     required=true,
+     *     type="string",
+     *     default="43fd8a51ae2758bb8176bff0c16",
+     *     description="X-AUTH-TOKEN (api token authorization)"
+     * )
      *
      * @SWG\Response(
      *     response=200,
@@ -62,6 +79,15 @@ class ChildrenController extends AbstractController
     /**
      * @SWG\Tag(name="Children")
      *
+     * @SWG\Parameter(
+     *     name="X-AUTH-TOKEN",
+     *     in="header",
+     *     required=true,
+     *     type="string",
+     *     default="43fd8a51ae2758bb8176bff0c16",
+     *     description="X-AUTH-TOKEN (api token authorization)"
+     * )
+     *
      * @SWG\Response(
      *     response=200,
      *     description="Return actions list for children."
@@ -84,6 +110,15 @@ class ChildrenController extends AbstractController
 
     /**
      * @SWG\Tag(name="Children")
+     *
+     * @SWG\Parameter(
+     *     name="X-AUTH-TOKEN",
+     *     in="header",
+     *     required=true,
+     *     type="string",
+     *     default="43fd8a51ae2758bb8176bff0c16",
+     *     description="X-AUTH-TOKEN (api token authorization)"
+     * )
      *
      * @SWG\Response(
      *     response=200,

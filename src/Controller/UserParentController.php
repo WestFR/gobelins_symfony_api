@@ -5,19 +5,9 @@ namespace App\Controller;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Swagger\Annotations as SWG;
-
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-
-use JMS\Serializer\SerializerInterface;
-use JMS\Serializer\DeserializationContext;
-
 use Symfony\Component\Validator\ConstraintViolationListInterface;
-use Symfony\Component\Validator\Validator\ValidatorInterface;
-
-use FOS\RestBundle\Controller\Annotations as Rest;
-
 use App\Entity\User;
 use App\Entity\UserParent;
 use App\Entity\Children;
