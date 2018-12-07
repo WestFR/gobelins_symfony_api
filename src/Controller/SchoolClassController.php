@@ -29,7 +29,7 @@ class SchoolClassController extends AbstractController
     {
         $classes = $this->getDoctrine()->getRepository(SchoolClass::class)->findAll();
 
-        return $this->resSuccess($classes, ['classes_list']);
+        return $this->resSuccess($classes, ['class_list']);
     }
 
     /**
@@ -40,14 +40,13 @@ class SchoolClassController extends AbstractController
      *     description="Return class item."
      * )
      *
-     * @param int $classId
+     * @param string $classId
      * @return \Symfony\Component\HttpFoundation\JsonResponse
      */
-    public function getClassAction(int $classId)
+    public function getClassAction(string $classId)
     {
         $class = $this->getDoctrine()->getRepository(SchoolClass::class)->find($classId);
-
-        return $this->resSuccess($class, ['classes_item']);
+        return $this->resSuccess($class, ['class_item']);
     }
 
     /**

@@ -64,7 +64,7 @@ class SchoolClass
      * @ORM\JoinColumn(nullable=false)
      *
      * @JMS\Expose()
-     * @JMS\Groups({"parent_list", "class_item"})
+     * @JMS\Groups({"parent_list", "children_item", "class_item"})
      *
      * @SWG\Property(description="Teacher of the class.")
      */
@@ -75,7 +75,7 @@ class SchoolClass
      * @ORM\JoinColumn(nullable=false, referencedColumnName="label")
      *
      * @JMS\Expose()
-     * @JMS\Groups({"user_create", "parent_list", "class_item"})
+     * @JMS\Groups({"user_create", "children_item", "parent_list", "class_item"})
      *
      * @SWG\Property(description="School level of the class.")
      */

@@ -33,7 +33,7 @@ class User implements UserInterface
      * @ORM\Column(type="guid")
      *
      * @JMS\Expose
-     * @JMS\Groups({"user_admin"})
+     * @JMS\Groups({"user_create", "user_admin"})
      *
      * @SWG\Property(description="Unique id of the user.")
      */
@@ -51,7 +51,7 @@ class User implements UserInterface
      * @Assert\NotBlank()
      *
      * @JMS\Expose
-     * @JMS\Groups({"user_create", "user_update", "user_list", "user_item", "parent_list"})
+     * @JMS\Groups({"user_create", "user_update", "user_list", "user_item", "children_item"})
      *
      * @SWG\Property(description="First name of the user.")
      */
@@ -62,7 +62,7 @@ class User implements UserInterface
      * @Assert\NotBlank()
      *
      * @JMS\Expose
-     * @JMS\Groups({"user_create", "user_update", "user_list", "user_item",  "parent_list"})
+     * @JMS\Groups({"user_create", "user_update", "user_list", "user_item",  "children_item"})
      *
      * @SWG\Property(description="Last name of the user.")
      */
@@ -109,7 +109,7 @@ class User implements UserInterface
      *
      * @return String
      */
-    public function getType(): String
+    public function getUserType(): String
     {
         if ($this instanceof UserTeacher) return 'teacher';
         else if ($this instanceof UserParent) return 'parent';
