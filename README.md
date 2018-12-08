@@ -54,6 +54,8 @@ Follow this instructions to install the application & develop your features !
 1. Launch your server environment and execute this command in your project's folder : <br>
 `bin/console s:r`
 
+2. You can use API endpoints directly from documentation or via different routes (the default passwords of users in fixtures are 0000)
+
 
 ## API
 
